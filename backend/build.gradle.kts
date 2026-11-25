@@ -32,6 +32,10 @@ dependencies {
 
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-flyway")
+    implementation("org.springframework.boot:spring-boot-starter-mail")
+
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.boot:spring-boot-starter-session-jdbc")
 
     implementation("org.springframework.modulith:spring-modulith-starter-core")
 
@@ -40,6 +44,8 @@ dependencies {
     runtimeOnly("org.flywaydb:flyway-database-postgresql")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-security-test")
     testImplementation("org.springframework.modulith:spring-modulith-core")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

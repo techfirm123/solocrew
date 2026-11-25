@@ -31,9 +31,26 @@ spring:
     init:
       mode: never
 
+  session:
+    timeout: 30m
+    jdbc:
+      initialize-schema: never
+      table-name: SPRING_SESSION
+      cleanup-cron: "0 * * * * *"
+
 server:
   port: 8080
   shutdown: graceful
+
+  servlet:
+    session:
+      cookie:
+        name: SOLOCREW_SESSION
+        http-only: true
+        same-site: lax
+
+      tracking-modes:
+        - cookie
 
 management:
   endpoints:
@@ -46,7 +63,6 @@ management:
     health:
       probes:
         enabled: true
-
       show-details: never
       show-components: never
 

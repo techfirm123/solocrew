@@ -7,11 +7,16 @@ Last updated: 2026-11-25
 - Complete: SC-FOUNDATION-001 — Engineering Foundation
 - Complete: SC-FOUNDATION-002 — Backend Application Foundation
 - Complete: SC-FOUNDATION-003 — Persistence Foundation
-- In progress: SC-FOUNDATION-004 — Owner Workspace Foundation
+- Complete: SC-FOUNDATION-004 — Owner Workspace Foundation
+- In progress: SC-FOUNDATION-005 — Identity & Owner Access
 
-Current feature branch:
+Current branch:
 
-    feature/SC-FOUNDATION-004-owner-command-center
+    feature/SC-FOUNDATION-005-identity-owner-access
+
+Current checkpoint:
+
+    SC-FOUNDATION-005-B — Owner Registration & Email Verification
 
 ## Product context
 
@@ -20,29 +25,34 @@ operated computer sales and service business.
 
 The product is not intended to become another conventional ERP.
 
-The business owner interacts with SoloCrew through the Owner
-Command Center.
+The Owner Command Center is the primary owner experience.
 
-SoloCrew platform operators use a separate SoloCrew Control Center.
-
-The Owner Command Center is the primary product experience.
-Digital employees and business capabilities should become available
-through this experience as they are implemented.
+The SoloCrew Control Center is a separate platform-operator experience.
 
 ## Architecture direction
 
 - Modular monolith initially.
 - Java 21 and Spring Boot backend.
 - Next.js, React and TypeScript web applications.
-- PostgreSQL as the authoritative relational data store.
+- PostgreSQL as authoritative relational storage.
 - Flyway for versioned database changes.
-- JDBC for direct persistence access until domain requirements
-  justify additional persistence abstractions.
+- JDBC for direct persistence access.
+- Spring Security for authentication and authorization.
+- Spring Session JDBC for server-side sessions.
+- SMTP abstraction for provider-independent email delivery.
+- Mailpit for local email development.
+- AES-256-GCM encryption for sensitive email outbox payloads.
+- PostgreSQL-backed transactional email outbox.
+- Append-oriented audit events.
+- Correlation IDs for request and execution diagnostics.
 - Temporal for durable workflow execution.
-- Spring AI as an AI integration layer, not the application
-  orchestrator.
-- Local-first development without a Docker Compose dependency.
-- Separate owner and platform-operator security boundaries.
+- Spring AI as an AI integration layer, not the application orchestrator.
+- No local Docker Compose dependency.
+
+Architecture decisions:
+
+- docs/decisions/ADR-0001-engineering-baseline.md
+- docs/decisions/ADR-0002-identity-access-and-auditability.md
 
 ## Toolchain
 
@@ -63,12 +73,15 @@ through this experience as they are implemented.
 ## Current local environment
 
 - macOS with Homebrew.
-- PostgreSQL 18.6 installed and running.
-- solocrew_dev and solocrew_test databases created.
-- solocrew_app database login configured.
+- PostgreSQL 18.6 running natively.
+- solocrew_dev and solocrew_test databases.
+- solocrew_app database login.
 - DBeaver connections verified.
-- Backend IntelliJ Gradle configurations created.
-- Local database credentials are held in an ignored local file.
+- Backend IntelliJ Gradle configurations.
+- Local secrets in an ignored properties file.
+- Mailpit installed and running.
+- Mailpit SMTP: localhost:1025.
+- Mailpit web UI: http://localhost:8025.
 
 ## Completed slices
 
@@ -76,29 +89,86 @@ through this experience as they are implemented.
 - docs/handoffs/SC-FOUNDATION-002-backend-foundation.md
 - docs/handoffs/SC-FOUNDATION-003-persistence-foundation.md
 
-## Active slice — SC-FOUNDATION-004
+SC-FOUNDATION-004 is merged. Owner Web source code is under
+apps/owner-web/.
 
-Owner Workspace Foundation:
+## Active slice — SC-FOUNDATION-005
 
-- Next.js Owner Web application.
-- React and TypeScript foundation.
-- Shared application layout.
-- Owner workspace navigation.
-- Initial Command Center.
-- Responsive desktop and mobile layout.
-- Honest empty states rather than fabricated business metrics.
-- Frontend type-check and production-build validation.
-- Documentation and handoff updates.
+Identity & Owner Access.
 
-This slice does not yet implement authentication,
-business APIs, assignment execution or digital employee workflows.
+### Checkpoint 005-A — Identity & Security Foundation
 
-## Development workflow
+Implementation and local validation completed:
+
+- User identity schema.
+- Business workspace schema.
+- Workspace membership schema.
+- Database-backed UserDetailsService.
+- BCrypt password encoder.
+- Spring Security filter chain.
+- CSRF protection.
+- PostgreSQL-backed Spring Session tables.
+- Append-only audit-event schema and writer.
+- Audit mutation protection.
+- Correlation ID filter.
+- Security, session, identity and audit integration tests.
+
+Migrations V1, V2 and V3 were verified in both local databases.
+
+### Checkpoint 005-B — Owner Registration & Email Verification
+
+Current implementation:
+
+- Registration request and response contracts.
+- Owner registration service.
+- Business workspace provisioning.
+- Owner membership provisioning.
+- Verification token generation and SHA-256 hashing.
+- 24-hour verification expiration.
+- Transactional email outbox.
+- AES-256-GCM email content encryption.
+- Standard SMTP delivery through JavaMailSender.
+- Scheduled outbox dispatcher.
+- Retry and dead-letter states.
+- Mailpit development configuration.
+- Public endpoint rate limiting.
+- Email verification endpoint.
+- Verification resend endpoint.
+- Registration, verification and resend audit events.
+- Integration tests.
+
+### Checkpoint 005-C — Owner Login & Protected Workspace
+
+Planned:
+
+- Login and logout APIs.
+- Session creation and invalidation.
+- CSRF token delivery to Owner Web.
+- Owner registration and verification screens.
+- Owner login screen.
+- Protected Command Center routes.
+- Authenticated owner identity display.
+- Workspace membership authorization.
+- Security and session lifecycle tests.
+
+## Immediate next actions
+
+1. Add the generated email encryption key to the local secrets file.
+2. Install the updated backend dependencies.
+3. Apply Flyway migration V4 to development and test databases.
+4. Run the new encryption, registration and verification tests.
+5. Start the backend and submit a registration.
+6. Inspect the verification email in Mailpit.
+7. Verify successful activation.
+8. Validate the backend, frontend and CI.
+9. Continue to checkpoint 005-C after B passes.
+
+## Development conventions
 
 - Keep main stable.
 - Use one feature branch per slice.
 - Deliver small, complete vertical slices.
-- Provide complete contents for every created or changed file.
+- Provide complete contents for all created or changed files.
 - Do not use ZIPs or downloadable archives as implementation handoffs.
 - Validate locally before opening a pull request.
 - Validate CI before merging.
@@ -106,25 +176,15 @@ business APIs, assignment execution or digital employee workflows.
 - Keep this root document focused on current state and next actions.
 - Keep architecture decisions in docs/decisions/.
 
-## Immediate next actions
-
-1. Establish the Owner Web application.
-2. Install and lock frontend dependencies.
-3. Run frontend type-check and production build.
-4. Inspect the Command Center in the browser.
-5. Validate the repository and CI.
-6. Open a pull request and merge after validation.
-
 ## Not yet implemented
 
-- Authentication and authorization.
-- Organization management.
-- Workforce Manager.
-- Digital employee execution.
+- Owner login and logout.
+- Protected Owner Web routes.
+- Password recovery.
+- Platform operator authentication.
 - Personal Research Specialist.
-- Assignment creation and tracking.
-- Research report generation and review.
+- Workforce Manager.
 - Temporal workflows.
 - AI Model Gateway.
-- Owner account and workspace management.
-- SoloCrew Control Center application.
+- SoloCrew Control Center.
+- Customer diagnostic package sharing.

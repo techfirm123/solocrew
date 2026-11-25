@@ -90,7 +90,7 @@ Connect to the PostgreSQL maintenance database:
 
     psql -d postgres
 
-At the psql prompt, create the application login:
+Create the application login if it does not already exist:
 
     CREATE ROLE solocrew_app LOGIN;
 
@@ -98,12 +98,12 @@ Set its password:
 
     \password solocrew_app
 
-Create the development and test databases:
+Create the development and test databases if they do not already exist:
 
     CREATE DATABASE solocrew_dev OWNER solocrew_app;
     CREATE DATABASE solocrew_test OWNER solocrew_app;
 
-Verify the databases:
+Verify:
 
     \l
 
@@ -111,20 +111,24 @@ Exit:
 
     \q
 
-These are one-time setup commands. Do not execute the CREATE ROLE
-or CREATE DATABASE commands again if the objects already exist.
+These are one-time setup commands. Do not execute CREATE ROLE
+or CREATE DATABASE again if the objects already exist.
+
+For an existing role, verify and enable login if required:
+
+    ALTER ROLE solocrew_app LOGIN;
 
 The application role owns both databases. It does not need PostgreSQL
 superuser privileges.
 
 ### 6. Verify database connectivity
 
-Verify the development database:
+Development database:
 
     psql -h localhost -U solocrew_app -d solocrew_dev \
       -c "SELECT current_database(), current_user, version();"
 
-Verify the test database:
+Test database:
 
     psql -h localhost -U solocrew_app -d solocrew_test \
       -c "SELECT current_database(), current_user, version();"
@@ -133,9 +137,9 @@ Both commands should connect using the application user's password.
 
 ### 7. Configure DBeaver
 
-Create a new PostgreSQL connection in DBeaver.
+Create two PostgreSQL connections.
 
-Development connection:
+Development:
 
 | Setting | Value |
 |---|---|
@@ -143,9 +147,9 @@ Development connection:
 | Port | 5432 |
 | Database | solocrew_dev |
 | Username | solocrew_app |
-| Password | Your local database password |
+| Password | Local database password |
 
-Test connection:
+Tests:
 
 | Setting | Value |
 |---|---|
@@ -153,33 +157,53 @@ Test connection:
 | Port | 5432 |
 | Database | solocrew_test |
 | Username | solocrew_app |
-| Password | Your local database password |
+| Password | Local database password |
 
 Use DBeaver to inspect schemas, tables and Flyway migration history.
 
-After the backend starts for the first time, refresh the database tree.
-You should see the platform schema and the Flyway migration history table.
+Do not create application tables manually in DBeaver.
+All application schema changes must be introduced through
+version-controlled Flyway migrations.
 
-### 8. Configure the application password
+### 8. Configure local database secrets
 
-The backend reads the local database password from:
+Create a local copy of the example file:
 
-    SOLOCREW_DATABASE_PASSWORD
+    cp backend/local-secrets.properties.example \
+       backend/local-secrets.properties
 
-Set it in your terminal session:
+Restrict access to the file:
 
-    export SOLOCREW_DATABASE_PASSWORD='your-local-password'
+    chmod 600 backend/local-secrets.properties
 
-Do not commit this value to Git.
+Edit backend/local-secrets.properties:
 
-For IntelliJ run configurations, configure the same variable in the
-environment variables section.
+    SOLOCREW_DATABASE_PASSWORD=your-actual-local-password
 
-The database URL and username have local development defaults.
-They can be overridden using:
+Do not commit this file.
+
+The file is excluded by .gitignore.
+
+The development and test Spring profiles import this local file
+automatically. The backend can therefore run through IntelliJ,
+Gradle or the terminal without repeatedly exporting the password.
+
+The default local database settings are:
+
+Development:
+
+    jdbc:postgresql://localhost:5432/solocrew_dev
+
+Tests:
+
+    jdbc:postgresql://localhost:5432/solocrew_test
+
+The database URL and username can be overridden using:
 
 - SOLOCREW_DATABASE_URL
 - SOLOCREW_DATABASE_USERNAME
+
+Production credentials must be configured explicitly.
 
 ## Install workspace dependencies
 
@@ -187,7 +211,13 @@ From the repository root:
 
     pnpm install --frozen-lockfile
 
-## Backend build
+When adding or changing frontend dependencies, run:
+
+    pnpm install
+
+Commit the resulting pnpm-lock.yaml.
+
+## Backend development
 
 Navigate to the backend directory:
 
@@ -202,28 +232,19 @@ distribution on first use.
 
 A globally installed Gradle is not required.
 
-## Validate the backend
-
-The test profile connects to solocrew_test.
-
-Ensure SOLOCREW_DATABASE_PASSWORD is set in the current shell.
+### Validate the backend
 
 From the backend directory:
 
     ./gradlew clean check
 
-This runs the backend tests, including PostgreSQL and Flyway
-integration tests.
+The test profile connects to solocrew_test.
 
-The test profile does not use solocrew_dev.
-
-## Run the backend
-
-From the backend directory:
+### Run the backend
 
     ./gradlew bootRun
 
-The default development profile connects to solocrew_dev.
+The development profile connects to solocrew_dev.
 
 The backend starts on:
 
@@ -235,18 +256,94 @@ Health endpoints:
     http://localhost:8080/actuator/health/liveness
     http://localhost:8080/actuator/health/readiness
 
+## Owner Web development
+
+From the repository root:
+
+    pnpm run dev:owner-web
+
+The Owner Web application starts on:
+
+    http://localhost:3000
+
+The application is located at:
+
+    apps/owner-web/
+
+### Validate the Owner Web application
+
+Run:
+
+    pnpm --filter @solocrew/owner-web typecheck
+
+Build for production:
+
+    pnpm --filter @solocrew/owner-web build
+
+Or run the complete repository check:
+
+    pnpm run check
+
+The repository check includes workspace validation, whitespace
+validation, Owner Web type-checking and the Owner Web production build.
+
+## IntelliJ IDEA
+
+### Backend development configuration
+
+Use the Gradle run configuration:
+
+    SoloCrew Backend - Development
+
+Task:
+
+    bootRun
+
+This starts the backend against solocrew_dev.
+
+### Backend test configuration
+
+Use:
+
+    SoloCrew Backend - Tests
+
+Task:
+
+    clean check
+
+This runs backend validation against solocrew_test.
+
+### Quick test configuration
+
+Use:
+
+    SoloCrew Backend - Quick Tests
+
+Task:
+
+    test
+
+These configurations use the local secrets file imported by
+the Spring development and test profiles.
+
+### Owner Web
+
+Open the repository root in IntelliJ.
+
+Use the integrated terminal:
+
+    pnpm run dev:owner-web
+
+The frontend and backend can run independently.
+
 ## Application profiles
 
-The application supports:
+The backend supports:
 
 - dev: Local PostgreSQL development, readable logs and detailed health.
 - test: Dedicated PostgreSQL test database and test logging.
 - prod: Explicit external database configuration, structured JSON
   logging and restricted health details.
-
-Run with the production profile:
-
-    SPRING_PROFILES_ACTIVE=prod ./gradlew bootRun
 
 Production database settings must be supplied explicitly.
 
@@ -276,18 +373,8 @@ Rules:
 - Do not use schema.sql or data.sql alongside Flyway.
 - Do not use Flyway clean against application databases.
 
-DBeaver is for inspection and controlled troubleshooting. The
-version-controlled migrations remain the source of truth.
-
-## Repository validation
-
-Return to the repository root:
-
-    cd ..
-
-Run:
-
-    pnpm run check
+DBeaver is for inspection and controlled troubleshooting.
+Version-controlled Flyway migrations remain the source of truth.
 
 ## Local development principles
 

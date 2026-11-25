@@ -1,0 +1,36 @@
+# Operating systems and editors
+.DS_Store
+Thumbs.db
+.idea/
+*.iml
+.vscode/*
+!.vscode/extensions.json
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+
+# Node / pnpm / Next.js
+node_modules/
+.pnpm-store/
+.next/
+out/
+dist/
+.turbo/
+coverage/
+
+# Gradle / JVM
+.gradle/
+**/build/
+.kotlin/
+*.class
+hs_err_pid*
+
+# Test and tooling output
+*.log
+*.tmp
+.DS_Store

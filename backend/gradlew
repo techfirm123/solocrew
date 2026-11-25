@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+# Integrity-verified Gradle bootstrap launcher for SoloCrew.
+# It downloads the pinned Gradle distribution and verifies its SHA-256 before use.
+set -euo pipefail
+
+GRADLE_VERSION="9.9.2"
+GRADLE_SHA256="971fcd7150ca4ba04852c0b2ca0d2d0ab9468e14b03473eab19528809914c76b"
+GRADLE_URL="https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip"
+
+if [[ -n "${GRADLE_HOME:-}" && -x "${GRADLE_HOME}/bin/gradle" ]]; then
+  installed_version="$("${GRADLE_HOME}/bin/gradle" --version | awk '/^Gradle / { print $2; exit }')"
+  if [[ "$installed_version" == "$GRADLE_VERSION" ]]; then
+    exec "${GRADLE_HOME}/bin/gradle" "$@"
+  fi
+fi
+
+if ! command -v curl >/dev/null 2>&1; then
+  echo "Error: curl is required to download Gradle ${GRADLE_VERSION}." >&2
+  exit 1
+fi
+
+if ! command -v unzip >/dev/null 2>&1; then
+  echo "Error: unzip is required to install Gradle ${GRADLE_VERSION}." >&2
+  exit 1
+fi
+
+if command -v shasum >/dev/null 2>&1; then
+  sha256_file() { shasum -a 256 "$1" | awk '{ print $1 }'; }
+elif command -v sha256sum >/dev/null 2>&1; then
+  sha256_file() { sha256sum "$1" | awk '{ print $1 }'; }
+else
+  echo "Error: shasum or sha256sum is required to verify the Gradle distribution." >&2
+  exit 1
+fi
+
+GRADLE_USER_HOME="${GRADLE_USER_HOME:-${HOME}/.gradle}"
+CACHE_ROOT="${GRADLE_USER_HOME}/wrapper/dists/solocrew-gradle-${GRADLE_VERSION}"
+INSTALL_DIR="${CACHE_ROOT}/gradle-${GRADLE_VERSION}"
+
+if [[ ! -x "${INSTALL_DIR}/bin/gradle" ]]; then
+  mkdir -p "$CACHE_ROOT"
+
+  TEMP_DIR="$(mktemp -d "${CACHE_ROOT}/.bootstrap.XXXXXX")"
+  cleanup() { rm -rf "$TEMP_DIR"; }
+  trap cleanup EXIT
+
+  ARCHIVE="${TEMP_DIR}/gradle-${GRADLE_VERSION}-bin.zip"
+
+  echo "Downloading Gradle ${GRADLE_VERSION}..."
+
+  curl --fail --location --retry 3 --connect-timeout 20 \
+    "$GRADLE_URL" \
+    --output "$ARCHIVE"
+
+  ACTUAL_SHA256="$(sha256_file "$ARCHIVE")"
+
+  if [[ "$ACTUAL_SHA256" != "$GRADLE_SHA256" ]]; then
+    echo "Error: Gradle distribution checksum mismatch." >&2
+    echo "Expected: $GRADLE_SHA256" >&2
+    echo "Actual:   $ACTUAL_SHA256" >&2
+    exit 1
+  fi
+
+  echo "Checksum verified. Installing Gradle ${GRADLE_VERSION}..."
+
+  mkdir -p "${TEMP_DIR}/unpacked"
+  unzip -q "$ARCHIVE" -d "${TEMP_DIR}/unpacked"
+
+  rm -rf "$INSTALL_DIR"
+
+  mv "${TEMP_DIR}/unpacked/gradle-${GRADLE_VERSION}" "$INSTALL_DIR"
+fi
+
+exec "${INSTALL_DIR}/bin/gradle" "$@"

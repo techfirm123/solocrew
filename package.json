@@ -1,0 +1,15 @@
+{
+  "name": "solocrew",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@11.29.0",
+  "engines": {
+    "node": ">=24.0.0 <25",
+    "pnpm": ">=11.29.0 <12"
+  },
+  "scripts": {
+    "check:workspace": "pnpm --recursive list --depth -1",
+    "check:whitespace": "bash scripts/check-whitespace.sh",
+    "check": "pnpm run check:workspace && pnpm run check:whitespace"
+  }
+}

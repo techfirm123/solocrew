@@ -8,6 +8,19 @@ spring:
       maximum-pool-size: ${SOLOCREW_DATABASE_POOL_SIZE:10}
       minimum-idle: ${SOLOCREW_DATABASE_MIN_IDLE:2}
 
+  mail:
+    host: ${SOLOCREW_SMTP_HOST}
+    port: ${SOLOCREW_SMTP_PORT:587}
+    username: ${SOLOCREW_SMTP_USERNAME}
+    password: ${SOLOCREW_SMTP_PASSWORD}
+    properties:
+      "[mail.smtp.auth]": true
+      "[mail.smtp.starttls.enable]": true
+      "[mail.smtp.starttls.required]": true
+      "[mail.smtp.connectiontimeout]": 5000
+      "[mail.smtp.timeout]": 5000
+      "[mail.smtp.writetimeout]": 5000
+
 logging:
   structured:
     format:
@@ -17,8 +30,26 @@ logging:
     root: INFO
     com.solocrew: INFO
 
+server:
+  servlet:
+    session:
+      cookie:
+        secure: true
+        http-only: true
+        same-site: lax
+
 management:
   endpoint:
     health:
       show-details: never
       show-components: never
+
+solocrew:
+  mail:
+    from: ${SOLOCREW_MAIL_FROM}
+    verification-url-base: ${SOLOCREW_VERIFICATION_URL_BASE}
+    encryption-key: ${SOLOCREW_EMAIL_ENCRYPTION_KEY}
+
+    outbox:
+      enabled: true
+      poll-interval-ms: ${SOLOCREW_EMAIL_OUTBOX_POLL_INTERVAL_MS:5000}

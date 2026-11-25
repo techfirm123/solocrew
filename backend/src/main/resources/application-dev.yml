@@ -11,6 +11,16 @@ spring:
       maximum-pool-size: 5
       minimum-idle: 1
 
+  mail:
+    host: ${SOLOCREW_SMTP_HOST:localhost}
+    port: ${SOLOCREW_SMTP_PORT:1025}
+    properties:
+      "[mail.smtp.auth]": false
+      "[mail.smtp.starttls.enable]": false
+      "[mail.smtp.connectiontimeout]": 5000
+      "[mail.smtp.timeout]": 3000
+      "[mail.smtp.writetimeout]": 5000
+
 server:
   address: 127.0.0.1
 
@@ -24,3 +34,13 @@ management:
     health:
       show-details: always
       show-components: always
+
+solocrew:
+  mail:
+    from: no-reply@solocrew.local
+    verification-url-base: http://localhost:3000/verify-email
+    encryption-key: ${SOLOCREW_EMAIL_ENCRYPTION_KEY}
+
+    outbox:
+      enabled: true
+      poll-interval-ms: 5000

@@ -15,6 +15,16 @@ spring:
       maximum-pool-size: 3
       minimum-idle: 1
 
+  mail:
+    host: localhost
+    port: 1025
+    properties:
+      "[mail.smtp.auth]": false
+      "[mail.smtp.starttls.enable]": false
+      "[mail.smtp.connectiontimeout]": 1000
+      "[mail.smtp.timeout]": 1000
+      "[mail.smtp.writetimeout]": 1000
+
 logging:
   level:
     root: WARN
@@ -24,3 +34,16 @@ management:
     health:
       show-details: always
       show-components: always
+
+solocrew:
+  mail:
+    from: no-reply@solocrew.test
+    verification-url-base: http://localhost:3000/verify-email
+
+    # Deterministic test-only AES key.
+    # Never use this key outside automated tests.
+    encryption-key: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+
+    outbox:
+      enabled: false
+      poll-interval-ms: 60000

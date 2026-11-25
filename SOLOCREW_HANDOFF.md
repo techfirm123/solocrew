@@ -4,42 +4,45 @@ Last updated: 2026-11-25
 
 ## Current status
 
-- Completed: SC-FOUNDATION-001 — Engineering Foundation
-- Completed: SC-FOUNDATION-002 — Backend Application Foundation
-- In progress: SC-FOUNDATION-003 — Persistence Foundation
+- Complete: SC-FOUNDATION-001 — Engineering Foundation
+- Complete: SC-FOUNDATION-002 — Backend Application Foundation
+- Complete: SC-FOUNDATION-003 — Persistence Foundation
+- In progress: SC-FOUNDATION-004 — Owner Workspace Foundation
 
 Current feature branch:
 
-    feature/SC-FOUNDATION-003-persistence-foundation
+    feature/SC-FOUNDATION-004-owner-command-center
 
 ## Product context
 
 SoloCrew is an AI-powered digital workforce for an independently
 operated computer sales and service business.
 
-It is not intended to become another conventional ERP.
+The product is not intended to become another conventional ERP.
 
-The owner interacts with the digital workforce through the
-Owner Command Center.
+The business owner interacts with SoloCrew through the Owner
+Command Center.
 
 SoloCrew platform operators use a separate SoloCrew Control Center.
+
+The Owner Command Center is the primary product experience.
+Digital employees and business capabilities should become available
+through this experience as they are implemented.
 
 ## Architecture direction
 
 - Modular monolith initially.
-- Java and Spring Boot backend.
-- Next.js and TypeScript web applications.
+- Java 21 and Spring Boot backend.
+- Next.js, React and TypeScript web applications.
 - PostgreSQL as the authoritative relational data store.
 - Flyway for versioned database changes.
+- JDBC for direct persistence access until domain requirements
+  justify additional persistence abstractions.
 - Temporal for durable workflow execution.
 - Spring AI as an AI integration layer, not the application
   orchestrator.
 - Local-first development without a Docker Compose dependency.
-- Business operations and platform administration have separate
-  security boundaries.
-
-See docs/decisions/ADR-0001-engineering-baseline.md for the
-engineering baseline.
+- Separate owner and platform-operator security boundaries.
 
 ## Toolchain
 
@@ -53,59 +56,64 @@ engineering baseline.
 | Spring Modulith | 2.2.0 |
 | Spring AI | 2.1.0 |
 | Next.js | 16.4.6 |
+| React | 19.3.1 |
+| TypeScript | 5.9.3 |
 | PostgreSQL | 18.x |
 
 ## Current local environment
 
 - macOS with Homebrew.
-- PostgreSQL 18.6 installed.
-- PostgreSQL service started.
-- pg_isready reports that port 5432 is accepting connections.
-- DBeaver is available for database inspection.
-- Local application role and databases are being configured.
+- PostgreSQL 18.6 installed and running.
+- solocrew_dev and solocrew_test databases created.
+- solocrew_app database login configured.
+- DBeaver connections verified.
+- Backend IntelliJ Gradle configurations created.
+- Local database credentials are held in an ignored local file.
 
 ## Completed slices
 
-Detailed implementation and validation records:
-
 - docs/handoffs/SC-FOUNDATION-001-engineering-foundation.md
 - docs/handoffs/SC-FOUNDATION-002-backend-foundation.md
+- docs/handoffs/SC-FOUNDATION-003-persistence-foundation.md
 
-## Active slice — SC-FOUNDATION-003
+## Active slice — SC-FOUNDATION-004
 
-Persistence Foundation:
+Owner Workspace Foundation:
 
-- PostgreSQL JDBC connectivity.
-- Hikari connection pooling.
-- Flyway migration management.
-- Initial platform schema.
-- JDBC and transaction integration tests.
-- Separate development and test databases.
-- PostgreSQL-backed GitHub Actions validation.
-- Local setup and DBeaver documentation.
+- Next.js Owner Web application.
+- React and TypeScript foundation.
+- Shared application layout.
+- Owner workspace navigation.
+- Initial Command Center.
+- Responsive desktop and mobile layout.
+- Honest empty states rather than fabricated business metrics.
+- Frontend type-check and production-build validation.
+- Documentation and handoff updates.
 
-No business tables are introduced in this slice.
+This slice does not yet implement authentication,
+business APIs, assignment execution or digital employee workflows.
 
 ## Development workflow
 
 - Keep main stable.
 - Use one feature branch per slice.
 - Deliver small, complete vertical slices.
-- Provide complete file contents for every created or changed file.
+- Provide complete contents for every created or changed file.
+- Do not use ZIPs or downloadable archives as implementation handoffs.
 - Validate locally before opening a pull request.
 - Validate CI before merging.
-- Record completed work in docs/handoffs/.
+- Record completed slices in docs/handoffs/.
 - Keep this root document focused on current state and next actions.
 - Keep architecture decisions in docs/decisions/.
 
 ## Immediate next actions
 
-1. Complete local PostgreSQL role and database setup.
-2. Apply the SC-FOUNDATION-003 implementation.
-3. Run backend integration tests against solocrew_test.
-4. Start the application against solocrew_dev.
-5. Inspect the platform schema and Flyway history in DBeaver.
-6. Validate GitHub Actions and merge the slice.
+1. Establish the Owner Web application.
+2. Install and lock frontend dependencies.
+3. Run frontend type-check and production build.
+4. Inspect the Command Center in the browser.
+5. Validate the repository and CI.
+6. Open a pull request and merge after validation.
 
 ## Not yet implemented
 
@@ -114,7 +122,9 @@ No business tables are introduced in this slice.
 - Workforce Manager.
 - Digital employee execution.
 - Personal Research Specialist.
+- Assignment creation and tracking.
+- Research report generation and review.
 - Temporal workflows.
 - AI Model Gateway.
-- Owner Web application screens.
-- SoloCrew Control Center screens.
+- Owner account and workspace management.
+- SoloCrew Control Center application.

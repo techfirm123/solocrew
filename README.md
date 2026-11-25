@@ -8,6 +8,11 @@ operated computer sales and service business.
 The product is designed around business outcomes and accountable
 digital employees, not around reproducing a conventional ERP experience.
 
+The Owner Command Center is the primary experience through which
+business owners will delegate work, follow progress and review outcomes.
+
+SoloCrew operators will use a separate Control Center.
+
 ## Repository layout
 
     apps/
@@ -35,6 +40,8 @@ digital employees, not around reproducing a conventional ERP experience.
 | Spring Modulith | 2.2.0 |
 | Spring AI | 2.1.0 |
 | Next.js | 16.4.6 |
+| React | 19.3.1 |
+| TypeScript | 5.9.3 |
 | PostgreSQL | 18.x |
 
 See ADR-0001 for architecture decisions.
@@ -49,13 +56,9 @@ Docker Compose is not required.
 
     ./scripts/doctor.sh
 
-### Install frontend workspace dependencies
+### Install workspace dependencies
 
     pnpm install --frozen-lockfile
-
-### Validate repository conventions
-
-    pnpm run check
 
 ### Configure PostgreSQL
 
@@ -70,27 +73,28 @@ Create the application login:
 
 - solocrew_app
 
-See docs/development/local-setup.md for complete commands and DBeaver
-connection details.
+See docs/development/local-setup.md for complete commands and
+DBeaver connection details.
 
-Configure the local database password:
+### Configure local secrets
 
-    export SOLOCREW_DATABASE_PASSWORD='your-local-password'
+Create a local copy:
 
-### Validate the backend
+    cp backend/local-secrets.properties.example \
+       backend/local-secrets.properties
 
-    cd backend
-    ./gradlew clean check
+Edit the copied file and set your local PostgreSQL password.
 
-Backend tests use solocrew_test.
+Do not commit the local secrets file.
 
 ### Start the backend
 
+    cd backend
     ./gradlew bootRun
 
 The development profile connects to solocrew_dev.
 
-The backend starts on:
+Backend URL:
 
     http://localhost:8080
 
@@ -100,11 +104,37 @@ Health endpoints:
     http://localhost:8080/actuator/health/liveness
     http://localhost:8080/actuator/health/readiness
 
-### Production profile
+### Start the Owner Web application
 
-    SPRING_PROFILES_ACTIVE=prod ./gradlew bootRun
+From the repository root:
 
-Production database settings must be supplied explicitly.
+    pnpm run dev:owner-web
+
+Owner Workspace:
+
+    http://localhost:3000
+
+### Validate the frontend
+
+    pnpm --filter @solocrew/owner-web typecheck
+    pnpm --filter @solocrew/owner-web build
+
+### Validate the backend
+
+From the backend directory:
+
+    ./gradlew clean check
+
+Backend tests use solocrew_test.
+
+### Validate the repository
+
+From the repository root:
+
+    pnpm run check
+
+This validates workspace conventions, whitespace, Owner Web types
+and the Owner Web production build.
 
 ## Product principles
 
@@ -112,6 +142,7 @@ Production database settings must be supplied explicitly.
 - Product-led discovery.
 - Small, complete vertical slices.
 - Modular monolith before microservices.
+- The Owner Command Center is the primary owner experience.
 - Business records remain authoritative.
 - AI operates through controlled business capabilities.
 - Digital employees have explicit responsibilities.

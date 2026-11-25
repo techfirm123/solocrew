@@ -8,8 +8,11 @@
     "pnpm": ">=11.29.0 <12"
   },
   "scripts": {
+    "dev:owner-web": "pnpm --filter @solocrew/owner-web dev",
+    "build:owner-web": "pnpm --filter @solocrew/owner-web build",
     "check:workspace": "pnpm --recursive list --depth -1",
     "check:whitespace": "bash scripts/check-whitespace.sh",
-    "check": "pnpm run check:workspace && pnpm run check:whitespace"
+    "check:owner-web": "pnpm --filter @solocrew/owner-web check",
+    "check": "pnpm run check:workspace && pnpm run check:whitespace && pnpm run check:owner-web"
   }
 }

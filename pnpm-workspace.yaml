@@ -5,3 +5,5 @@ engineStrict: true
 strictPeerDependencies: true
 autoInstallPeers: false
 preferWorkspacePackages: true
+minimumReleaseAgeExclude:
+  - '@types/react@19.3.1'

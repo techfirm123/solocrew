@@ -109,11 +109,41 @@ Commit all generated Gradle Wrapper files.
 
 ## Validate the backend
 
-    ./gradlew check
+From the backend directory:
+
+    ./gradlew clean check
 
 The backend uses a Java 21 Gradle toolchain.
 
 Automatic JDK toolchain downloads are disabled. Install JDK 21 locally.
+
+## Run the backend
+
+From the backend directory:
+
+    ./gradlew bootRun
+
+The default development profile starts the application on:
+
+    http://localhost:8080
+
+Health endpoints:
+
+    http://localhost:8080/actuator/health
+    http://localhost:8080/actuator/health/liveness
+    http://localhost:8080/actuator/health/readiness
+
+## Application profiles
+
+The application supports:
+
+- dev: Local development, readable logs and detailed local health.
+- test: Test configuration.
+- prod: Structured JSON logging and restricted health details.
+
+Run with the production profile:
+
+    SPRING_PROFILES_ACTIVE=prod ./gradlew bootRun
 
 ## Repository validation
 
@@ -134,11 +164,11 @@ Run:
 - Local builds should not require paid AI APIs.
 - External provider dependencies should have suitable mock implementations.
 
-## Not included in this foundation slice
+## Not included in this slice
 
-- Spring Boot application implementation.
-- Database migrations.
-- Authentication.
+- PostgreSQL integration.
+- Flyway migrations.
+- Authentication and authorization.
 - Next.js application screens.
 - Temporal workflow implementation.
 - AI Model Gateway implementation.

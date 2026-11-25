@@ -1,0 +1,13 @@
+server:
+  address: 127.0.0.1
+
+logging:
+  level:
+    root: INFO
+    com.solocrew: DEBUG
+
+management:
+  endpoint:
+    health:
+      show-details: always
+      show-components: always

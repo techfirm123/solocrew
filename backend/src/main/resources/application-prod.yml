@@ -1,0 +1,14 @@
+logging:
+  structured:
+    format:
+      console: logstash
+
+  level:
+    root: INFO
+    com.solocrew: INFO
+
+management:
+  endpoint:
+    health:
+      show-details: never
+      show-components: never

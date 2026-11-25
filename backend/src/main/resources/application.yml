@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: solocrew-backend
+
+  profiles:
+    default: dev
+
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
+
+  modulith:
+    runtime:
+      verification-enabled: true
+
+server:
+  port: 8080
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health
+
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+      show-details: never
+      show-components: never
+
+  health:
+    livenessstate:
+      enabled: true
+
+    readinessstate:
+      enabled: true

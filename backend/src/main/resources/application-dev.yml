@@ -1,3 +1,16 @@
+spring:
+  config:
+    import: optional:file:./local-secrets.properties
+
+  datasource:
+    url: ${SOLOCREW_DATABASE_URL:jdbc:postgresql://localhost:5432/solocrew_dev}
+    username: ${SOLOCREW_DATABASE_USERNAME:solocrew_app}
+    password: ${SOLOCREW_DATABASE_PASSWORD}
+
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 1
+
 server:
   address: 127.0.0.1
 

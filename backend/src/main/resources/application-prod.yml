@@ -1,3 +1,13 @@
+spring:
+  datasource:
+    url: ${SOLOCREW_DATABASE_URL}
+    username: ${SOLOCREW_DATABASE_USERNAME}
+    password: ${SOLOCREW_DATABASE_PASSWORD}
+
+    hikari:
+      maximum-pool-size: ${SOLOCREW_DATABASE_POOL_SIZE:10}
+      minimum-idle: ${SOLOCREW_DATABASE_MIN_IDLE:2}
+
 logging:
   structured:
     format:

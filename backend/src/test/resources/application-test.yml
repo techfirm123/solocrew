@@ -1,6 +1,19 @@
 spring:
+  config:
+    import: optional:file:./local-secrets.properties
+
   main:
     banner-mode: off
+
+  datasource:
+    url: ${SOLOCREW_DATABASE_URL:jdbc:postgresql://localhost:5432/solocrew_test}
+    username: ${SOLOCREW_DATABASE_USERNAME:solocrew_app}
+    password: ${SOLOCREW_DATABASE_PASSWORD}
+
+    hikari:
+      pool-name: SoloCrewTestConnectionPool
+      maximum-pool-size: 3
+      minimum-idle: 1
 
 logging:
   level:

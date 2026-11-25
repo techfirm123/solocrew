@@ -16,6 +16,21 @@ jobs:
     name: Validate repository foundation
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: solocrew_ci_admin_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -27,7 +42,6 @@ jobs:
           java-version: '21'
           cache: gradle
 
-      # Install pnpm before setup-node attempts to configure its cache.
       - name: Set up pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -47,6 +61,26 @@ jobs:
       - name: Validate workspace and repository conventions
         run: pnpm run check
 
+      - name: Create application database role and test database
+        run: |
+          container_id="$(docker ps -q --filter "ancestor=postgres:18" | head -n 1)"
+
+          if [ -z "$container_id" ]; then
+            echo "PostgreSQL service container was not found."
+            exit 1
+          fi
+
+          docker exec "$container_id" psql \
+            --username=postgres \
+            --dbname=postgres \
+            --set=ON_ERROR_STOP=1 \
+            --command="CREATE ROLE solocrew_app LOGIN PASSWORD 'solocrew_ci_password';" \
+            --command="CREATE DATABASE solocrew_test OWNER solocrew_app;"
+
       - name: Validate backend Gradle build
         working-directory: backend
+        env:
+          SOLOCREW_DATABASE_URL: jdbc:postgresql://localhost:5432/solocrew_test
+          SOLOCREW_DATABASE_USERNAME: solocrew_app
+          SOLOCREW_DATABASE_PASSWORD: solocrew_ci_password
         run: ./gradlew check

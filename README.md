@@ -19,6 +19,7 @@ digital employees, not around reproducing a conventional ERP experience.
     docs/
       decisions/
       development/
+      handoffs/
 
     scripts/
 
@@ -56,16 +57,38 @@ Docker Compose is not required.
 
     pnpm run check
 
+### Configure PostgreSQL
+
+Install and start PostgreSQL 18 locally.
+
+Create these databases:
+
+- solocrew_dev
+- solocrew_test
+
+Create the application login:
+
+- solocrew_app
+
+See docs/development/local-setup.md for complete commands and DBeaver
+connection details.
+
+Configure the local database password:
+
+    export SOLOCREW_DATABASE_PASSWORD='your-local-password'
+
 ### Validate the backend
 
     cd backend
     ./gradlew clean check
 
+Backend tests use solocrew_test.
+
 ### Start the backend
 
     ./gradlew bootRun
 
-The development profile is activated by default.
+The development profile connects to solocrew_dev.
 
 The backend starts on:
 
@@ -81,12 +104,7 @@ Health endpoints:
 
     SPRING_PROFILES_ACTIVE=prod ./gradlew bootRun
 
-The production profile enables structured JSON logging.
-
-The Gradle Wrapper downloads the pinned distribution and validates
-its SHA-256 checksum.
-
-A globally installed Gradle is not required.
+Production database settings must be supplied explicitly.
 
 ## Product principles
 
@@ -100,3 +118,10 @@ A globally installed Gradle is not required.
 - Human accountability is preserved.
 - Platform administration is separate from business operations.
 - No infrastructure dependency without a demonstrated need.
+
+## Project documentation
+
+- SOLOCREW_HANDOFF.md: Current project state and next action.
+- docs/handoffs/: Completed slice handoff records.
+- docs/decisions/: Long-lived architecture decisions.
+- docs/development/: Development and setup guides.

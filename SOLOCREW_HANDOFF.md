@@ -1,44 +1,50 @@
-# SoloCrew handoff
+# SoloCrew — Current Project Handoff
 
-- Current slice: SC-FOUNDATION-002
-- Title: Backend Application Foundation
-- Date: 2026-11-25
-- Status: Implementation prepared; local validation pending
+Last updated: 2026-11-25
+
+## Current status
+
+- Completed: SC-FOUNDATION-001 — Engineering Foundation
+- Completed: SC-FOUNDATION-002 — Backend Application Foundation
+- In progress: SC-FOUNDATION-003 — Persistence Foundation
+
+Current feature branch:
+
+    feature/SC-FOUNDATION-003-persistence-foundation
 
 ## Product context
 
-SoloCrew is an AI-powered digital workforce for a single-person
-computer sales and service business.
+SoloCrew is an AI-powered digital workforce for an independently
+operated computer sales and service business.
 
-The product is not intended to be another ERP application.
+It is not intended to become another conventional ERP.
 
-The owner interacts with a digital workforce through the Owner
-Command Center.
+The owner interacts with the digital workforce through the
+Owner Command Center.
 
-SoloCrew operators manage the platform through the separate
-SoloCrew Control Center.
+SoloCrew platform operators use a separate SoloCrew Control Center.
 
-## Delivered in this slice
+## Architecture direction
 
-- Spring Boot 4.2.0 application.
-- Java 21 Gradle build.
-- Spring Modulith 2.2.0 integration.
-- Platform module boundary.
-- Shared UTC Clock configuration.
-- Runtime module verification.
-- Static module architecture test.
-- Actuator health endpoint.
-- Liveness and readiness endpoints.
-- Development profile.
-- Test profile.
-- Production profile.
-- Production structured JSON logging.
-- Application startup and health endpoint tests.
+- Modular monolith initially.
+- Java and Spring Boot backend.
+- Next.js and TypeScript web applications.
+- PostgreSQL as the authoritative relational data store.
+- Flyway for versioned database changes.
+- Temporal for durable workflow execution.
+- Spring AI as an AI integration layer, not the application
+  orchestrator.
+- Local-first development without a Docker Compose dependency.
+- Business operations and platform administration have separate
+  security boundaries.
 
-## Selected toolchain
+See docs/decisions/ADR-0001-engineering-baseline.md for the
+engineering baseline.
+
+## Toolchain
 
 | Component | Version |
-|---|---|
+|---|---:|
 | Java | 21 LTS |
 | Gradle | 9.9.2 |
 | Node.js | 24 LTS |
@@ -49,72 +55,66 @@ SoloCrew Control Center.
 | Next.js | 16.4.6 |
 | PostgreSQL | 18.x |
 
-## Validation required
+## Current local environment
 
-Run from the backend directory:
+- macOS with Homebrew.
+- PostgreSQL 18.6 installed.
+- PostgreSQL service started.
+- pg_isready reports that port 5432 is accepting connections.
+- DBeaver is available for database inspection.
+- Local application role and databases are being configured.
 
-    ./gradlew clean check
+## Completed slices
 
-Start the backend:
+Detailed implementation and validation records:
 
-    ./gradlew bootRun
+- docs/handoffs/SC-FOUNDATION-001-engineering-foundation.md
+- docs/handoffs/SC-FOUNDATION-002-backend-foundation.md
 
-Validate health:
+## Active slice — SC-FOUNDATION-003
 
-    curl http://localhost:8080/actuator/health
+Persistence Foundation:
 
-Validate liveness:
+- PostgreSQL JDBC connectivity.
+- Hikari connection pooling.
+- Flyway migration management.
+- Initial platform schema.
+- JDBC and transaction integration tests.
+- Separate development and test databases.
+- PostgreSQL-backed GitHub Actions validation.
+- Local setup and DBeaver documentation.
 
-    curl http://localhost:8080/actuator/health/liveness
+No business tables are introduced in this slice.
 
-Validate readiness:
+## Development workflow
 
-    curl http://localhost:8080/actuator/health/readiness
-
-Run from the repository root:
-
-    pnpm run check
-
-Do not merge this slice until local validation succeeds.
-
-The standard Gradle Wrapper must also be generated and committed.
-
-## Not implemented
-
-- PostgreSQL integration.
-- Flyway migrations.
-- Authentication and authorization.
-- Organization management.
-- Workforce orchestration.
-- Business capabilities.
-- Temporal integration.
-- AI Model Gateway.
-- Personal Research Specialist.
-- Owner Web application.
-- SoloCrew Control Center application.
-
-## Next slice
-
-SC-FOUNDATION-003 — Local Persistence Foundation.
-
-Expected scope:
-
-- PostgreSQL 18 local development setup.
-- Spring Boot database integration.
-- Flyway migration foundation.
-- Database connection configuration by profile.
-- Persistence integration tests.
-- No Docker Compose dependency.
-
-The first Personal Research Specialist will follow once the application
-and persistence foundations are validated.
-
-## Development conventions
-
-- Deliver complete vertical slices.
-- Provide complete contents for every created or changed file.
-- Do not use downloadable ZIPs as implementation handoffs.
-- Validate each slice before proceeding.
-- Update this handoff after each completed slice.
 - Keep main stable.
 - Use one feature branch per slice.
+- Deliver small, complete vertical slices.
+- Provide complete file contents for every created or changed file.
+- Validate locally before opening a pull request.
+- Validate CI before merging.
+- Record completed work in docs/handoffs/.
+- Keep this root document focused on current state and next actions.
+- Keep architecture decisions in docs/decisions/.
+
+## Immediate next actions
+
+1. Complete local PostgreSQL role and database setup.
+2. Apply the SC-FOUNDATION-003 implementation.
+3. Run backend integration tests against solocrew_test.
+4. Start the application against solocrew_dev.
+5. Inspect the platform schema and Flyway history in DBeaver.
+6. Validate GitHub Actions and merge the slice.
+
+## Not yet implemented
+
+- Authentication and authorization.
+- Organization management.
+- Workforce Manager.
+- Digital employee execution.
+- Personal Research Specialist.
+- Temporal workflows.
+- AI Model Gateway.
+- Owner Web application screens.
+- SoloCrew Control Center screens.

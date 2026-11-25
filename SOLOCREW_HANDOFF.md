@@ -1,9 +1,9 @@
 # SoloCrew handoff
 
-- Current slice: SC-FOUNDATION-001
-- Title: Repository and Engineering Setup
+- Current slice: SC-FOUNDATION-002
+- Title: Backend Application Foundation
 - Date: 2026-11-25
-- Status: Scaffold created; local validation pending
+- Status: Implementation prepared; local validation pending
 
 ## Product context
 
@@ -18,22 +18,22 @@ Command Center.
 SoloCrew operators manage the platform through the separate
 SoloCrew Control Center.
 
-## Delivered
+## Delivered in this slice
 
-- Monorepo structure.
-- pnpm workspace configuration.
-- Owner Web workspace placeholder.
-- Control Center workspace placeholder.
-- Java 21 Gradle backend baseline.
-- Gradle 9.9.2 bootstrap launcher.
-- Gradle distribution checksum configuration.
-- Git conventions.
-- Editor configuration.
-- Toolchain doctor script.
-- Whitespace validation.
-- GitHub Actions CI foundation.
-- ADR-0001.
-- Local setup documentation.
+- Spring Boot 4.2.0 application.
+- Java 21 Gradle build.
+- Spring Modulith 2.2.0 integration.
+- Platform module boundary.
+- Shared UTC Clock configuration.
+- Runtime module verification.
+- Static module architecture test.
+- Actuator health endpoint.
+- Liveness and readiness endpoints.
+- Development profile.
+- Test profile.
+- Production profile.
+- Production structured JSON logging.
+- Application startup and health endpoint tests.
 
 ## Selected toolchain
 
@@ -49,49 +49,65 @@ SoloCrew Control Center.
 | Next.js | 16.4.6 |
 | PostgreSQL | 18.x |
 
-## Local validation
+## Validation required
 
-Run:
+Run from the backend directory:
 
-    ./scripts/doctor.sh
+    ./gradlew clean check
 
-    pnpm install --frozen-lockfile
+Start the backend:
+
+    ./gradlew bootRun
+
+Validate health:
+
+    curl http://localhost:8080/actuator/health
+
+Validate liveness:
+
+    curl http://localhost:8080/actuator/health/liveness
+
+Validate readiness:
+
+    curl http://localhost:8080/actuator/health/readiness
+
+Run from the repository root:
 
     pnpm run check
 
-    cd backend
+Do not merge this slice until local validation succeeds.
 
-    ./gradlew check
-
-Generate and verify the standard Gradle Wrapper as documented in:
-
-    docs/development/local-setup.md
+The standard Gradle Wrapper must also be generated and committed.
 
 ## Not implemented
 
-- Spring Boot application.
-- Business domain modules.
 - PostgreSQL integration.
 - Flyway migrations.
 - Authentication and authorization.
-- Next.js applications.
-- Temporal workflow integration.
+- Organization management.
+- Workforce orchestration.
+- Business capabilities.
+- Temporal integration.
 - AI Model Gateway.
+- Personal Research Specialist.
+- Owner Web application.
+- SoloCrew Control Center application.
 
 ## Next slice
 
-SC-FOUNDATION-002 — Backend Application Foundation.
+SC-FOUNDATION-003 — Local Persistence Foundation.
 
-Scope:
+Expected scope:
 
-- Spring Boot 4.2 application.
-- Java 21.
-- Initial application configuration.
-- Spring Modulith integration.
-- Module boundary verification.
-- Application profiles.
-- Health endpoints.
-- Backend build validation.
+- PostgreSQL 18 local development setup.
+- Spring Boot database integration.
+- Flyway migration foundation.
+- Database connection configuration by profile.
+- Persistence integration tests.
+- No Docker Compose dependency.
+
+The first Personal Research Specialist will follow once the application
+and persistence foundations are validated.
 
 ## Development conventions
 
@@ -100,3 +116,5 @@ Scope:
 - Do not use downloadable ZIPs as implementation handoffs.
 - Validate each slice before proceeding.
 - Update this handoff after each completed slice.
+- Keep main stable.
+- Use one feature branch per slice.

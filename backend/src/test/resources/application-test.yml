@@ -1,0 +1,13 @@
+spring:
+  main:
+    banner-mode: off
+
+logging:
+  level:
+    root: WARN
+
+management:
+  endpoint:
+    health:
+      show-details: always
+      show-components: always

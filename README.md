@@ -31,6 +31,8 @@ digital employees, not around reproducing a conventional ERP experience.
 | Node.js | 24 LTS |
 | pnpm | 11.29.0 |
 | Spring Boot | 4.2.0 |
+| Spring Modulith | 2.2.0 |
+| Spring AI | 2.1.0 |
 | Next.js | 16.4.6 |
 | PostgreSQL | 18.x |
 
@@ -57,13 +59,34 @@ Docker Compose is not required.
 ### Validate the backend
 
     cd backend
-    ./gradlew check
+    ./gradlew clean check
 
-The Gradle bootstrap launcher downloads the pinned distribution
-and validates its SHA-256 checksum.
+### Start the backend
 
-Generate the standard Gradle Wrapper after the first successful
-bootstrap, as documented in the local setup guide.
+    ./gradlew bootRun
+
+The development profile is activated by default.
+
+The backend starts on:
+
+    http://localhost:8080
+
+Health endpoints:
+
+    http://localhost:8080/actuator/health
+    http://localhost:8080/actuator/health/liveness
+    http://localhost:8080/actuator/health/readiness
+
+### Production profile
+
+    SPRING_PROFILES_ACTIVE=prod ./gradlew bootRun
+
+The production profile enables structured JSON logging.
+
+The Gradle Wrapper downloads the pinned distribution and validates
+its SHA-256 checksum.
+
+A globally installed Gradle is not required.
 
 ## Product principles
 

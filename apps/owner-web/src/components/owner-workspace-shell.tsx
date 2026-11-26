@@ -1,6 +1,9 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import type { OwnerSession } from "@/lib/api-client";
+import { LogoutButton } from "@/components/auth/logout-button";
+
 type NavigationIconName =
     | "command"
     | "workforce"
@@ -89,16 +92,34 @@ const upcomingNavigation: {
     }
 ];
 
+function initials(displayName: string): string {
+    const parts = displayName
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean);
+
+    if (parts.length === 0) {
+        return "SC";
+    }
+
+    return parts
+        .slice(0, 2)
+        .map((part) => part.charAt(0).toUpperCase())
+        .join("");
+}
+
 export function OwnerWorkspaceShell({
+    owner,
     children
 }: {
+    owner: OwnerSession;
     children: ReactNode;
 }) {
     return (
         <div className="workspace-shell">
             <aside className="sidebar">
                 <Link
-                    href="/"
+                    href="/workspace"
                     className="brand"
                     aria-label="SoloCrew Command Center"
                 >
@@ -169,7 +190,7 @@ export function OwnerWorkspaceShell({
 
                     <div className="sidebar-bottom-copy">
                         <strong>Owner workspace</strong>
-                        <span>Your business operations</span>
+                        <span>{owner.workspace.name}</span>
                     </div>
 
                     <span className="sidebar-bottom-indicator" />
@@ -185,18 +206,30 @@ export function OwnerWorkspaceShell({
                     </div>
 
                     <div className="topbar-actions">
-                        <span className="workspace-status">
+                        <span
+                            className="workspace-status"
+                            title={owner.workspace.name}
+                        >
                             <span className="workspace-status-dot" />
-                            Foundation preview
+                            {owner.workspace.name}
                         </span>
 
-                        <div
-                            className="owner-avatar"
-                            aria-label="Owner workspace"
-                            title="Owner workspace"
-                        >
-                            O
+                        <div className="owner-profile">
+                            <div className="owner-profile-copy">
+                                <strong>{owner.displayName}</strong>
+                                <span>{owner.email}</span>
+                            </div>
+
+                            <div
+                                className="owner-avatar"
+                                aria-label={owner.displayName}
+                                title={owner.displayName}
+                            >
+                                {initials(owner.displayName)}
+                            </div>
                         </div>
+
+                        <LogoutButton />
                     </div>
                 </header>
 
@@ -210,7 +243,9 @@ export function OwnerWorkspaceShell({
                         Your business. Your digital workforce.
                     </span>
 
-                    <span>Owner workspace</span>
+                    <span>
+                        {owner.workspace.role} workspace
+                    </span>
                 </footer>
             </div>
         </div>

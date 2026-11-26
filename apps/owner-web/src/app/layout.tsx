@@ -1,25 +1,28 @@
 import type { Metadata, Viewport } from "next";
 
 import "./globals.css";
+import "./auth.css";
+import "./brand.css";
+import "./design-tokens.css";
 
 export const metadata: Metadata = {
     applicationName: "SoloCrew",
     title: {
-        default: "Command Center | SoloCrew",
+        default: "SoloCrew — Your business. Your digital workforce.",
         template: "%s | SoloCrew"
     },
     description:
-        "The SoloCrew Owner Command Center. Coordinate your digital workforce, delegate work and stay in control of business decisions.",
+        "Build a capable digital workforce around your business. Delegate with clarity, follow the work and stay in control of important decisions.",
     robots: {
-        index: false,
-        follow: false
+        index: true,
+        follow: true
     }
 };
 
 export const viewport: Viewport = {
     width: "device-width",
     initialScale: 1,
-    themeColor: "#172f29"
+    themeColor: "#172d28"
 };
 
 export default function RootLayout({
@@ -28,7 +31,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en">
+        <html lang="en" data-theme="midnight-botanical">
             <body>{children}</body>
         </html>
     );

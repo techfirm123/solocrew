@@ -1,0 +1,195 @@
+/*
+ * SoloCrew semantic design tokens.
+ *
+ * Components should consume --sc-color-* tokens.
+ * Legacy aliases at the bottom keep existing styles working while
+ * the current CSS is progressively migrated.
+ *
+ * Theme selection is deliberately not implemented in this slice.
+ */
+
+:root {
+    color-scheme: light;
+
+    /* Canvas and surfaces */
+    --sc-color-canvas: #f5f3ea;
+    --sc-color-surface: #ffffff;
+    --sc-color-surface-subtle: #f0efe6;
+    --sc-color-surface-raised: #ffffff;
+    --sc-color-surface-selected: #eff4e6;
+    --sc-color-surface-hover: #f3f5e9;
+
+    /* Text */
+    --sc-color-text-primary: #172d28;
+    --sc-color-text-secondary: #42564a;
+    --sc-color-text-muted: #78837a;
+    --sc-color-text-subtle: #849087;
+    --sc-color-text-inverse: #ffffff;
+
+    /* Brand */
+    --sc-color-brand-primary: #172d28;
+    --sc-color-brand-primary-hover: #25463a;
+    --sc-color-brand-on-primary: #ffffff;
+    --sc-color-brand-secondary: #527b64;
+    --sc-color-brand-highlight: #d6ef70;
+    --sc-color-brand-on-highlight: #172d28;
+
+    /* Navigation */
+    --sc-color-navigation-background: #172d28;
+    --sc-color-navigation-text: #f5f3ea;
+    --sc-color-navigation-muted: #a6b9a8;
+    --sc-color-navigation-hover: #25463a;
+    --sc-color-navigation-active: #2d4a3d;
+    --sc-color-navigation-border: rgb(245 243 234 / 12%);
+
+    /* Borders and focus */
+    --sc-color-border: #e4e6dc;
+    --sc-color-border-strong: #d1d8ca;
+    --sc-color-border-subtle: #eceee7;
+    --sc-color-focus-ring: #527b64;
+
+    /* Feedback */
+    --sc-color-success: #38694c;
+    --sc-color-success-surface: #eff4e6;
+    --sc-color-success-border: #d9e5c8;
+
+    --sc-color-warning: #806a37;
+    --sc-color-warning-surface: #f6f1e5;
+    --sc-color-warning-border: #eadcbd;
+
+    --sc-color-danger: #914c3c;
+    --sc-color-danger-surface: #fcf1ed;
+    --sc-color-danger-border: #edcfc6;
+
+    --sc-color-info: #397b83;
+    --sc-color-info-surface: #edf5f4;
+    --sc-color-info-border: #cfe2df;
+
+    /* Effects */
+    --sc-shadow-card: 0 18px 48px rgb(23 45 40 / 9%);
+    --sc-shadow-floating: 0 14px 35px rgb(23 45 40 / 12%);
+    --sc-focus-outline: 0 0 0 3px rgb(82 123 100 / 18%);
+
+    /* Non-colour foundations */
+    --sc-radius-small: 8px;
+    --sc-radius-medium: 10px;
+    --sc-radius-large: 14px;
+    --sc-radius-card: 17px;
+
+    --sc-motion-fast: 150ms;
+    --sc-motion-normal: 180ms;
+}
+
+/*
+ * Theme identity.
+ *
+ * The current default is Midnight Botanical.
+ * Future themes will provide another token set under their own
+ * data-theme attribute without changing component styles.
+ */
+html[data-theme="midnight-botanical"] {
+    color-scheme: light;
+
+    --sc-color-canvas: #f5f3ea;
+    --sc-color-surface: #ffffff;
+    --sc-color-surface-subtle: #f0efe6;
+    --sc-color-surface-raised: #ffffff;
+    --sc-color-surface-selected: #eff4e6;
+    --sc-color-surface-hover: #f3f5e9;
+
+    --sc-color-text-primary: #172d28;
+    --sc-color-text-secondary: #42564a;
+    --sc-color-text-muted: #78837a;
+    --sc-color-text-subtle: #849087;
+    --sc-color-text-inverse: #ffffff;
+
+    --sc-color-brand-primary: #172d28;
+    --sc-color-brand-primary-hover: #25463a;
+    --sc-color-brand-on-primary: #ffffff;
+    --sc-color-brand-secondary: #527b64;
+    --sc-color-brand-highlight: #d6ef70;
+    --sc-color-brand-on-highlight: #172d28;
+
+    --sc-color-navigation-background: #172d28;
+    --sc-color-navigation-text: #f5f3ea;
+    --sc-color-navigation-muted: #a6b9a8;
+    --sc-color-navigation-hover: #25463a;
+    --sc-color-navigation-active: #2d4a3d;
+    --sc-color-navigation-border: rgb(245 243 234 / 12%);
+
+    --sc-color-border: #e4e6dc;
+    --sc-color-border-strong: #d1d8ca;
+    --sc-color-border-subtle: #eceee7;
+    --sc-color-focus-ring: #527b64;
+
+    --sc-color-success: #38694c;
+    --sc-color-success-surface: #eff4e6;
+    --sc-color-success-border: #d9e5c8;
+
+    --sc-color-warning: #806a37;
+    --sc-color-warning-surface: #f6f1e5;
+    --sc-color-warning-border: #eadcbd;
+
+    --sc-color-danger: #914c3c;
+    --sc-color-danger-surface: #fcf1ed;
+    --sc-color-danger-border: #edcfc6;
+
+    --sc-color-info: #397b83;
+    --sc-color-info-surface: #edf5f4;
+    --sc-color-info-border: #cfe2df;
+
+    --sc-shadow-card: 0 18px 48px rgb(23 45 40 / 9%);
+    --sc-shadow-floating: 0 14px 35px rgb(23 45 40 / 12%);
+    --sc-focus-outline: 0 0 0 3px rgb(82 123 100 / 18%);
+}
+
+/*
+ * Temporary compatibility aliases.
+ *
+ * Do not use these aliases in new components. Use --sc-color-*.
+ * Existing styles can continue using them during migration.
+ */
+:root {
+    --page-background: var(--sc-color-canvas);
+    --surface: var(--sc-color-surface);
+    --surface-subtle: var(--sc-color-surface-subtle);
+
+    --sidebar-background: var(--sc-color-navigation-background);
+    --sidebar-background-hover: var(--sc-color-navigation-hover);
+    --sidebar-text: var(--sc-color-navigation-text);
+    --sidebar-muted: var(--sc-color-navigation-muted);
+
+    --ink: var(--sc-color-text-primary);
+    --ink-secondary: var(--sc-color-text-secondary);
+    --muted: var(--sc-color-text-muted);
+
+    --accent: var(--sc-color-brand-secondary);
+    --accent-strong: var(--sc-color-brand-primary);
+    --accent-light: var(--sc-color-surface-selected);
+    --accent-pale: var(--sc-color-surface-subtle);
+
+    --border: var(--sc-color-border);
+    --border-strong: var(--sc-color-border-strong);
+
+    --warning-background: var(--sc-color-warning-surface);
+    --warning-text: var(--sc-color-warning);
+
+    --shadow-soft: var(--sc-shadow-card);
+}
+
+/*
+ * Global defaults for elements that should follow the active theme.
+ */
+html {
+    background: var(--sc-color-canvas);
+}
+
+body {
+    color: var(--sc-color-text-primary);
+    background: var(--sc-color-canvas);
+}
+
+:focus-visible {
+    outline: 3px solid var(--sc-color-focus-ring);
+    outline-offset: 3px;
+}

@@ -1,240 +1,388 @@
-import { OwnerWorkspaceShell } from "@/components/owner-workspace-shell";
+import Link from "next/link";
 
-export default function CommandCenterPage() {
+const workflow = [
+    {
+        number: "01",
+        title: "Set the direction",
+        description:
+            "Give a digital employee a clear objective, the context it needs and the boundaries for the work.",
+        symbol: "↗"
+    },
+    {
+        number: "02",
+        title: "Follow the work",
+        description:
+            "Understand what has started, what is progressing and where your attention may be needed.",
+        symbol: "◷"
+    },
+    {
+        number: "03",
+        title: "Review the outcome",
+        description:
+            "Inspect structured deliverables, explore their sources and decide what should happen next.",
+        symbol: "✓"
+    }
+];
+
+const principles = [
+    {
+        number: "01",
+        title: "Owner-directed",
+        description:
+            "You set the objective, decide what matters and retain control of important decisions."
+    },
+    {
+        number: "02",
+        title: "Work you can follow",
+        description:
+            "Assignments and outcomes are designed to be visible rather than hidden behind an AI chat."
+    },
+    {
+        number: "03",
+        title: "Built around your business",
+        description:
+            "Start with useful specialists and grow the digital workforce around the work your business needs."
+    }
+];
+
+function BrandMark() {
     return (
-        <OwnerWorkspaceShell>
-            <div className="command-center">
-                <section className="hero-section">
-                    <div className="hero-copy">
-                        <p className="eyebrow">
-                            <span className="eyebrow-line" />
-                            THE OWNER COMMAND CENTER
+        <span className="public-brand-mark" aria-hidden="true">
+            S
+        </span>
+    );
+}
+
+export default function PublicLandingPage() {
+    return (
+        <main className="public-site">
+            <header className="public-header">
+                <div className="public-container public-navigation">
+                    <Link
+                        href="/"
+                        className="public-brand"
+                        aria-label="SoloCrew home"
+                    >
+                        <BrandMark />
+
+                        <span className="public-brand-copy">
+                            <strong>SoloCrew</strong>
+                            <span>YOUR DIGITAL WORKFORCE</span>
+                        </span>
+                    </Link>
+
+                    <nav
+                        className="public-navigation-links"
+                        aria-label="Main navigation"
+                    >
+                        <a href="#how-it-works">How it works</a>
+                        <a href="#principles">Our approach</a>
+                    </nav>
+
+                    <div className="public-navigation-actions">
+                        <Link
+                            href="/login"
+                            className="public-login-link"
+                        >
+                            Sign in
+                        </Link>
+
+                        <Link
+                            href="/register"
+                            className="public-button public-button-small"
+                        >
+                            Create your workspace
+                            <span aria-hidden="true">↗</span>
+                        </Link>
+                    </div>
+                </div>
+            </header>
+
+            <section className="public-hero">
+                <div className="public-container public-hero-grid">
+                    <div className="public-hero-copy">
+                        <p className="public-eyebrow">
+                            <span />
+                            A DIFFERENT WAY TO RUN YOUR BUSINESS
                         </p>
 
                         <h1>
-                            Make room for the work
-                            <span>that matters.</span>
+                            Your business.
+                            <span>A workforce of your own.</span>
                         </h1>
 
-                        <p className="hero-description">
-                            Bring a capable digital workforce into your
-                            business. Give clear direction, stay close to
-                            the work, and remain in control of the decisions
-                            that matter.
+                        <p className="public-hero-description">
+                            Bring capable digital employees into your
+                            business. Give them clear direction, follow
+                            their work and stay in control of the
+                            decisions that matter.
                         </p>
 
-                        <div className="hero-note">
-                            <div className="hero-note-number">
-                                01
-                            </div>
+                        <div className="public-hero-actions">
+                            <Link
+                                href="/register"
+                                className="public-button"
+                            >
+                                Create your workspace
+                                <span aria-hidden="true">↗</span>
+                            </Link>
+
+                            <Link
+                                href="#how-it-works"
+                                className="public-text-link"
+                            >
+                                See how SoloCrew works
+                                <span aria-hidden="true">↓</span>
+                            </Link>
+                        </div>
+
+                        <div className="public-trust-note">
+                            <span className="public-trust-mark">
+                                ✓
+                            </span>
 
                             <div>
                                 <strong>
-                                    Your workspace is taking shape.
+                                    Built around owner control.
                                 </strong>
 
                                 <p>
-                                    We're starting with a Personal Research
-                                    Specialist, then expanding the team
-                                    around the work your business needs.
+                                    Your business records, permissions
+                                    and important decisions remain
+                                    under your control.
                                 </p>
                             </div>
                         </div>
                     </div>
 
-                    <article className="specialist-card">
-                        <div className="specialist-card-top">
-                            <span className="card-overline">
-                                FIRST DIGITAL EMPLOYEE
-                            </span>
+                    <div
+                        className="public-hero-visual"
+                        aria-label="Illustrative SoloCrew workforce preview"
+                    >
+                        <div className="public-visual-glow" />
 
-                            <span className="development-status">
-                                <span />
-                                IN DEVELOPMENT
-                            </span>
-                        </div>
+                        <div className="public-preview-window">
+                            <div className="public-preview-header">
+                                <div className="public-preview-brand">
+                                    <BrandMark />
+                                    <span>SoloCrew</span>
+                                </div>
 
-                        <div
-                            className="specialist-visual"
-                            aria-hidden="true"
-                        >
-                            <div className="specialist-orbit specialist-orbit-one" />
-                            <div className="specialist-orbit specialist-orbit-two" />
-
-                            <div className="specialist-visual-core">
-                                <span>R</span>
+                                <span className="public-preview-status">
+                                    <span />
+                                    WORKSPACE PREVIEW
+                                </span>
                             </div>
 
-                            <span className="specialist-orbit-dot specialist-orbit-dot-one" />
-                            <span className="specialist-orbit-dot specialist-orbit-dot-two" />
-                            <span className="specialist-orbit-dot specialist-orbit-dot-three" />
-                        </div>
+                            <div className="public-preview-body">
+                                <div className="public-preview-heading">
+                                    <div>
+                                        <p>YOUR WORKSPACE</p>
+                                        <h2>Meet your workforce.</h2>
+                                    </div>
 
-                        <div className="specialist-card-content">
-                            <p className="card-overline">
-                                YOUR FIRST SPECIALIST
-                            </p>
+                                    <span className="public-preview-count">
+                                        01
+                                    </span>
+                                </div>
 
-                            <h2>
-                                Personal Research Specialist
-                            </h2>
+                                <article className="public-specialist-preview">
+                                    <div className="public-specialist-avatar">
+                                        R
+                                    </div>
 
-                            <p className="specialist-description">
-                                Turn an open question into structured
-                                research, clear findings and traceable
-                                source references.
-                            </p>
+                                    <div className="public-specialist-copy">
+                                        <span>YOUR FIRST SPECIALIST</span>
+                                        <strong>
+                                            Personal Research Specialist
+                                        </strong>
+                                        <p>
+                                            Research, findings and
+                                            traceable source references.
+                                        </p>
+                                    </div>
 
-                            <div className="capability-tags">
-                                <span>Research briefs</span>
-                                <span>Source references</span>
-                                <span>Follow-up</span>
+                                    <span className="public-specialist-arrow">
+                                        ↗
+                                    </span>
+                                </article>
+
+                                <div className="public-preview-divider" />
+
+                                <div className="public-preview-work">
+                                    <div>
+                                        <span className="public-preview-work-icon">
+                                            01
+                                        </span>
+                                        <span>Set the direction</span>
+                                    </div>
+
+                                    <div>
+                                        <span className="public-preview-work-icon">
+                                            02
+                                        </span>
+                                        <span>Follow the work</span>
+                                    </div>
+
+                                    <div>
+                                        <span className="public-preview-work-icon">
+                                            03
+                                        </span>
+                                        <span>Review the outcome</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="public-preview-footer">
+                                <span className="public-preview-footer-dot" />
+                                Owner-controlled by design
                             </div>
                         </div>
-                    </article>
-                </section>
 
-                <section className="workflow-section">
-                    <div className="section-heading">
+                        <div className="public-floating-note">
+                            <span className="public-floating-note-icon">
+                                ✳
+                            </span>
+
+                            <span>
+                                <strong>Work with purpose.</strong>
+                                <small>Progress you can follow.</small>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section
+                className="public-workflow-section"
+                id="how-it-works"
+            >
+                <div className="public-container">
+                    <div className="public-section-heading">
                         <div>
-                            <p className="section-overline">
+                            <p className="public-section-eyebrow">
                                 THE SOLOCREW WORKFLOW
                             </p>
 
                             <h2>
-                                Clear direction. Visible progress.
-                                Useful outcomes.
+                                Clear direction.
+                                <span>Visible progress. Useful outcomes.</span>
                             </h2>
                         </div>
 
-                        <p className="section-description">
-                            The Command Center is designed to make
-                            delegation understandable and the results
-                            accountable.
+                        <p>
+                            A digital workforce should make running
+                            your business clearer, not more complicated.
                         </p>
                     </div>
 
-                    <div className="workflow-cards">
-                        <article className="workflow-card">
-                            <div className="workflow-card-top">
-                                <span className="workflow-number">
-                                    01
-                                </span>
+                    <div className="public-workflow-grid">
+                        {workflow.map((item) => (
+                            <article
+                                className="public-workflow-card"
+                                key={item.number}
+                            >
+                                <div className="public-workflow-card-top">
+                                    <span>{item.number}</span>
+                                    <span>{item.symbol}</span>
+                                </div>
 
-                                <span className="workflow-symbol">
-                                    ↗
-                                </span>
-                            </div>
-
-                            <h3>Set the direction</h3>
-
-                            <p>
-                                Give a specialist a clear objective,
-                                the relevant business context and
-                                boundaries for the work.
-                            </p>
-                        </article>
-
-                        <article className="workflow-card">
-                            <div className="workflow-card-top">
-                                <span className="workflow-number">
-                                    02
-                                </span>
-
-                                <span className="workflow-symbol">
-                                    ◷
-                                </span>
-                            </div>
-
-                            <h3>Follow the work</h3>
-
-                            <p>
-                                Understand what has started, what
-                                is progressing and where your
-                                attention may be needed.
-                            </p>
-                        </article>
-
-                        <article className="workflow-card">
-                            <div className="workflow-card-top">
-                                <span className="workflow-number">
-                                    03
-                                </span>
-
-                                <span className="workflow-symbol">
-                                    ✓
-                                </span>
-                            </div>
-
-                            <h3>Review the outcome</h3>
-
-                            <p>
-                                Read structured deliverables,
-                                inspect their sources and decide
-                                what should happen next.
-                            </p>
-                        </article>
+                                <h3>{item.title}</h3>
+                                <p>{item.description}</p>
+                            </article>
+                        ))}
                     </div>
-                </section>
+                </div>
+            </section>
 
-                <section className="activity-panel">
-                    <div className="activity-panel-heading">
-                        <div>
-                            <p className="section-overline">
-                                YOUR WORKSTREAM
-                            </p>
+            <section
+                className="public-principles-section"
+                id="principles"
+            >
+                <div className="public-container public-principles-layout">
+                    <div className="public-principles-heading">
+                        <p className="public-section-eyebrow">
+                            A BETTER WAY TO WORK
+                        </p>
 
-                            <h2>Recent activity</h2>
-
-                            <p className="activity-description">
-                                Assignments, progress and completed
-                                work will be collected here.
-                            </p>
-                        </div>
-
-                        <span className="activity-status">
-                            Awaiting first specialist
-                        </span>
-                    </div>
-
-                    <div className="activity-empty-state">
-                        <div className="activity-empty-icon" aria-hidden="true">
-                            <span className="empty-icon-page" />
-                            <span className="empty-icon-line empty-icon-line-one" />
-                            <span className="empty-icon-line empty-icon-line-two" />
-                            <span className="empty-icon-line empty-icon-line-three" />
-                        </div>
-
-                        <h3>
-                            Your workstream starts with an assignment.
-                        </h3>
+                        <h2>
+                            More capability.
+                            <span>Without giving up control.</span>
+                        </h2>
 
                         <p>
-                            Once the Personal Research Specialist is
-                            connected, your delegated work, progress
-                            and completed reports will appear here.
+                            SoloCrew is being built to put useful
+                            digital capability alongside the owner,
+                            not between the owner and the business.
                         </p>
                     </div>
-                </section>
 
-                <section className="control-principle">
-                    <div className="control-principle-mark" aria-hidden="true">
-                        <span>✓</span>
+                    <div className="public-principles-list">
+                        {principles.map((item) => (
+                            <article
+                                className="public-principle"
+                                key={item.number}
+                            >
+                                <span>{item.number}</span>
+
+                                <div>
+                                    <h3>{item.title}</h3>
+                                    <p>{item.description}</p>
+                                </div>
+                            </article>
+                        ))}
                     </div>
+                </div>
+            </section>
 
+            <section className="public-final-cta">
+                <div className="public-container public-final-cta-inner">
                     <div>
-                        <strong>
-                            You remain in control.
-                        </strong>
+                        <p className="public-section-eyebrow">
+                            MAKE ROOM FOR MEANINGFUL WORK
+                        </p>
+
+                        <h2>
+                            Start building your
+                            <span>digital workforce.</span>
+                        </h2>
 
                         <p>
-                            SoloCrew is being built around clear
-                            responsibilities, visible work and
-                            owner-controlled decisions.
+                            Create your owner workspace and take the
+                            first step with SoloCrew.
                         </p>
                     </div>
-                </section>
-            </div>
-        </OwnerWorkspaceShell>
+
+                    <Link
+                        href="/register"
+                        className="public-button public-button-light"
+                    >
+                        Create your workspace
+                        <span aria-hidden="true">↗</span>
+                    </Link>
+                </div>
+            </section>
+
+            <footer className="public-footer">
+                <div className="public-container public-footer-inner">
+                    <Link href="/" className="public-brand">
+                        <BrandMark />
+
+                        <span className="public-brand-copy">
+                            <strong>SoloCrew</strong>
+                            <span>YOUR DIGITAL WORKFORCE</span>
+                        </span>
+                    </Link>
+
+                    <p>
+                        Your business. Your digital workforce.
+                    </p>
+
+                    <span>
+                        © {new Date().getFullYear()} SoloCrew
+                    </span>
+                </div>
+            </footer>
+        </main>
     );
 }

@@ -1,6 +1,6 @@
-
 package com.solocrew.platform.security;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.session.web.http.CookieSerializer;
@@ -10,7 +10,10 @@ import org.springframework.session.web.http.DefaultCookieSerializer;
 public class SessionCookieConfiguration {
 
     @Bean
-    CookieSerializer cookieSerializer() {
+    CookieSerializer cookieSerializer(
+        @Value("${server.servlet.session.cookie.secure:false}")
+        boolean secureCookie
+    ) {
         DefaultCookieSerializer serializer =
             new DefaultCookieSerializer();
 
@@ -18,9 +21,8 @@ public class SessionCookieConfiguration {
         serializer.setCookiePath("/");
         serializer.setUseHttpOnlyCookie(true);
         serializer.setSameSite("Lax");
+        serializer.setUseSecureCookie(secureCookie);
 
-        // Secure-cookie behaviour defaults to the request's
-        // HTTPS status. Local HTTP development remains supported.
         return serializer;
     }
 }

@@ -10,6 +10,13 @@ from solocrew_runtime.contracts.research import (
     ResearchExecutionResponse,
     ResearchFinding,
 )
+from solocrew_runtime.research.intent import (
+    evaluate_candidate_intent,
+    extract_question_intent,
+)
+from solocrew_runtime.research.normalization import meaningful_terms
+
+GRAPH_REVISION = "deterministic-question-focused-v4"
 
 _STOP_WORDS = frozenset(
     {
@@ -67,28 +74,10 @@ class ResearchGraphState(TypedDict):
     response: ResearchExecutionResponse | None
 
 
-def _normalize_token(token: str) -> str:
-    """Apply basic deterministic singular normalization."""
-
-    if len(token) > 4 and token.endswith("ies"):
-        return token[:-3] + "y"
-
-    if len(token) > 3 and token.endswith("s") and not token.endswith("ss"):
-        return token[:-1]
-
-    return token
-
-
 def _meaningful_terms(value: str) -> set[str]:
-    """Extract normalized words while excluding common stop words."""
+    """Compatibility wrapper around shared concept normalization."""
 
-    tokens = re.findall(r"[a-z0-9]+", value.casefold())
-
-    return {
-        _normalize_token(token)
-        for token in tokens
-        if token not in _STOP_WORDS and (len(token) > 2 or token in {"ai", "pc", "os"})
-    }
+    return meaningful_terms(value)
 
 
 def _split_sentences(value: str) -> list[str]:
@@ -114,7 +103,7 @@ def _prepare_research(
 def _collect_evidence(
     state: ResearchGraphState,
 ) -> dict[str, dict[str, list[ResearchEvidence]]]:
-    """Find and rank source sentences using question-focused term matching."""
+    """Find and rank source sentences using question and intent constraints."""
 
     request = state["request"]
     evidence_by_question: dict[str, list[ResearchEvidence]] = {}
@@ -123,6 +112,7 @@ def _collect_evidence(
         # The question defines the evidence requirement.
         # The broader topic is context, not proof that a sentence answers it.
         question_terms = _meaningful_terms(question)
+        question_intent = extract_question_intent(question)
 
         ranked_matches: list[tuple[float, int, int, ResearchEvidence]] = []
 
@@ -135,6 +125,15 @@ def _collect_evidence(
 
             for sentence_index, sentence in enumerate(sentences):
                 sentence_terms = _meaningful_terms(sentence)
+
+                intent_evaluation = evaluate_candidate_intent(
+                    question_intent,
+                    sentence_terms,
+                )
+
+                if not intent_evaluation.eligible:
+                    continue
+
                 matched_terms = question_terms.intersection(sentence_terms)
 
                 if len(matched_terms) < _MINIMUM_MATCHED_TERMS:
@@ -223,6 +222,10 @@ def _assemble_report(
         (
             "A missing finding means the supplied excerpts did not contain enough "
             "matching text; it does not prove that no answer exists."
+        ),
+        (
+            "Relationship constraints use bounded deterministic question patterns. "
+            "They do not establish general semantic equivalence."
         ),
     ]
 

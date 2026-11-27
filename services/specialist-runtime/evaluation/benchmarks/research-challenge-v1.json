@@ -1,11 +1,10 @@
-
 {
   "benchmark_id": "solocrew-personal-research-challenge",
   "version": "1.0.0",
-  "graph_revision": "deterministic-question-focused-v2",
+  "graph_revision": "deterministic-question-focused-v4",
   "name": "Personal Research Specialist — Deterministic Challenge Benchmark",
   "source_material": "synthetic",
-  "description": "Challenge benchmark for paraphrased questions, short keyword overlap, misleading distractors, multi-sentence evidence and unsupported-question rejection. Designed to expose limitations, not to enforce perfect scores.",
+  "description": "Challenge benchmark for paraphrased questions, short keyword overlap, misleading distractors, multi-sentence evidence, relationship intent constraints and unsupported-question rejection.",
   "cases": [
     {
       "case_id": "paraphrased-thermal-question",

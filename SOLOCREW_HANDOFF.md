@@ -1,3 +1,4 @@
+
 # SoloCrew — Current Project Handoff
 
 Last updated: 2026-11-27
@@ -15,11 +16,19 @@ Last updated: 2026-11-27
 | SC-FOUNDATION-005-C1 — Backend Owner Login & Protected Workspace | Complete |
 | SC-FOUNDATION-005-C2 — Owner Web Authentication & Access | Complete |
 | SC-WORKFORCE-001-A — Python Specialist Runtime | Complete and merged |
-| SC-WORKFORCE-001-B1 — Research Evaluation Foundation | In progress |
+| SC-WORKFORCE-001-B1 — Research Evaluation Foundation through B1.3 | Complete and merged |
+| SC-WORKFORCE-001-B1.4 — Deterministic Matching Improvements | Implemented and locally validated; pending PR and merge |
 
 Current branch:
 
-    feature/SC-WORKFORCE-001-B1-research-evaluation-foundation
+    feature/SC-WORKFORCE-001-B1.4-deterministic-matching-improvements
+
+The B1.4 branch includes both:
+
+- B1.4.1 — Controlled Vocabulary Normalization
+- B1.4.2 — Deterministic Question Intent and Relationship Matching
+
+These changes have not yet been committed or merged.
 
 ## Product context
 
@@ -34,8 +43,8 @@ work, monitoring progress and reviewing deliverables.
 
 The owner remains accountable for important business decisions.
 
-SoloCrew is not intended to become a generic ERP, CRM or
-agent marketplace.
+SoloCrew is not intended to become a generic ERP, CRM or agent
+marketplace.
 
 ## Product and engineering principles
 
@@ -228,7 +237,7 @@ Delivered:
 - Structured research result.
 - Pytest and Ruff validation.
 
-Local validation recorded:
+Initial foundation validation:
 
 - 11 Python tests passed.
 - Ruff lint passed.
@@ -236,8 +245,8 @@ Local validation recorded:
 - Liveness returned HTTP 200.
 - Readiness returned HTTP 200.
 
-The original source-excerpt graph is a foundation, not yet a
-complete research capability.
+The original source-excerpt graph is a foundation, not a complete
+research capability.
 
 Canonical handoff:
 
@@ -245,31 +254,39 @@ Canonical handoff:
 
 ### SC-WORKFORCE-001-B1 — Research Evaluation Foundation
 
-Status: Implementation handoff prepared; local validation pending.
-
-Current branch:
-
-    feature/SC-WORKFORCE-001-B1-research-evaluation-foundation
+Status: Core evaluation foundation through B1.3 complete and merged.
 
 Objective:
 
-Establish a reproducible benchmark for evaluating deterministic
-research behaviour before expanding the specialist.
+Establish reproducible evaluation of deterministic research behaviour
+before expanding the specialist.
 
-Initial benchmark:
+Controlled benchmark:
 
     services/specialist-runtime/evaluation/benchmarks/research-v1.json
 
-Scenarios:
+Challenge benchmark:
+
+    services/specialist-runtime/evaluation/benchmarks/research-challenge-v1.json
+
+The controlled benchmark covers:
 
 1. Laptop battery health.
 2. Laptop overheating.
 3. SSD reliability.
 
-The dataset contains 13 questions, including deliberately
-unanswerable questions.
+It contains 13 questions, including deliberately unanswerable
+questions.
 
-Metrics:
+The challenge benchmark contains five scenarios covering:
+
+1. Paraphrased questions.
+2. Short keyword overlap.
+3. High-overlap distractors.
+4. Multi-sentence evidence.
+5. Unsupported-question rejection.
+
+Evaluation capabilities:
 
 - Evidence precision.
 - Evidence recall.
@@ -280,39 +297,146 @@ Metrics:
 - False support rate.
 - Citation traceability.
 - Execution latency.
+- Question-level diagnostics.
+- Candidate sentence selection diagnostics.
+- Status consistency checks.
+- Selection consistency checks.
 
-The source excerpts are synthetic controlled fixtures. The
-benchmark measures graph behaviour, not factual correctness
-or source authority.
+### SC-WORKFORCE-001-B1.4 — Deterministic Matching Improvements
 
-Evaluation command:
+Status: Implemented and locally validated; pending PR and merge.
 
-    cd services/specialist-runtime
+Active branch:
 
-    uv run python -m solocrew_runtime.evaluation.run_benchmark
+    feature/SC-WORKFORCE-001-B1.4-deterministic-matching-improvements
 
-Save a report:
+#### B1.4.1 — Controlled Vocabulary Normalization
 
-    uv run python -m solocrew_runtime.evaluation.run_benchmark \
-      --output /tmp/solocrew-research-v1-report.json
+Introduced shared normalization and controlled concept aliases.
 
-No quality thresholds are introduced until the initial baseline
-has been reviewed.
+Revision:
 
-Canonical handoff:
+    controlled-concept-aliases-v1
 
-    docs/handoffs/SC-WORKFORCE-001-B1-research-evaluation-foundation.md
+The graph and evaluation diagnostics use shared normalization
+behaviour. Original source sentences remain unchanged in returned
+evidence.
+
+This increment addressed a vocabulary mismatch in the paraphrased
+thermal research question.
+
+#### B1.4.2 — Deterministic Question Intent and Relationship Matching
+
+Introduced bounded subject-predicate-outcome extraction for
+recognized yes/no impact questions.
+
+Revision:
+
+    deterministic-outcome-intent-v1
+
+For recognized patterns, candidate evidence must satisfy the
+subject and requested outcome constraints in addition to the
+existing lexical relevance thresholds.
+
+This specifically addresses misleading keyword overlap where a
+sentence discusses the subject but not the outcome being asked
+about.
+
+The implementation remains deterministic and does not use an LLM
+or embeddings.
+
+#### Current graph revision
+
+    deterministic-question-focused-v4
+
+#### Validation results
+
+Local environment:
+
+    Python 3.14.7
+
+Validation:
+
+- 44 Python tests passed.
+- Ruff lint passed.
+- Ruff formatting passed.
+- Controlled benchmark passed.
+- Challenge benchmark passed.
+
+Controlled benchmark:
+
+| Metric | Result |
+|---|---:|
+| Questions | 13 |
+| Evidence true positives | 10 |
+| Evidence false positives | 0 |
+| Evidence false negatives | 0 |
+| Evidence precision | 1.0000 |
+| Evidence recall | 1.0000 |
+| Evidence F1 | 1.0000 |
+| Answerability accuracy | 1.0000 |
+| Unsupported-question rejection | 1.0000 |
+| False support rate | 0.0000 |
+| Citation traceability | 10/10 |
+| Status consistency errors | 0 |
+| Average case execution latency | 1.01 ms |
+
+Challenge benchmark:
+
+| Metric | Result |
+|---|---:|
+| Questions | 5 |
+| Evidence true positives | 3 |
+| Evidence false positives | 0 |
+| Evidence false negatives | 0 |
+| Evidence precision | 1.0000 |
+| Evidence recall | 1.0000 |
+| Evidence F1 | 1.0000 |
+| Answerability true positives | 2 |
+| Answerability true negatives | 3 |
+| Answerability false positives | 0 |
+| Answerability false negatives | 0 |
+| Answerability accuracy | 1.0000 |
+| Unsupported-question rejection | 1.0000 |
+| Status consistency errors | 0 |
+| Selection consistency errors | 0 |
+
+The five challenge classifications were:
+
+- Paraphrased thermal question: TRUE_POSITIVE.
+- Short keyword overlap: TRUE_NEGATIVE.
+- High-overlap distractor: TRUE_NEGATIVE.
+- Multi-sentence battery evidence: TRUE_POSITIVE.
+- Unsupported screen/SSD question: TRUE_NEGATIVE.
+
+The controlled and challenge datasets use synthetic source material.
+These results validate deterministic behaviour against authored
+fixtures; they do not establish factual correctness or general
+semantic understanding.
+
+The relationship matcher deliberately uses bounded patterns and
+exact normalized outcome terms. Valid paraphrases using different
+outcome vocabulary may still be rejected.
+
+The latest test execution reports 17 LangSmith dependency
+deprecation warnings. They are non-blocking and are not test failures.
+
+Canonical increment handoffs:
+
+    docs/handoffs/SC-WORKFORCE-001-B1.4.1-controlled-vocabulary-normalization.md
+
+    docs/handoffs/SC-WORKFORCE-001-B1.4.2-deterministic-question-intent-and-relationship-matching.md
 
 ## Revised Personal Research Specialist roadmap
 
 | Slice | Focus |
 |---|---|
 | 001-A | Python runtime foundation — complete |
-| 001-B1 | Research evaluation foundation — active |
+| 001-B1 | Research evaluation foundation — merged |
+| 001-B1.4 | Deterministic matching improvements — locally validated, pending merge |
 | 001-B2 | Deterministic source discovery and retrieval |
 | 001-B3 | Deterministic research analysis and evidence quality |
 | 001-B4 | Research report generation |
-| 001-B5 | Evaluation and performance optimisation |
 | 001-C | Java assignment integration |
 | 001-D | Optional AI evaluation and integration |
 
@@ -352,3 +476,18 @@ specialist has a meaningful, evaluated capability.
 - Update root handoff and slice handoff documents.
 - Keep architecture decisions in `docs/decisions/`.
 - Keep local credentials out of tracked files.
+
+## Immediate next action
+
+Complete the B1.4 feature branch close-out:
+
+1. Confirm the B1.4.1 and B1.4.2 handoff documents are present.
+2. Update this root handoff.
+3. Review the complete branch diff.
+4. Run final validation and `git diff --check`.
+5. Commit and push the feature branch.
+6. Open a pull request targeting `main`.
+7. Merge only after reviewing the PR.
+
+After B1.4 is merged, begin SC-WORKFORCE-001-B2:
+deterministic source discovery and retrieval.

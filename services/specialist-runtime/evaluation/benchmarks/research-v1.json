@@ -2,7 +2,7 @@
 {
   "benchmark_id": "solocrew-personal-research",
   "version": "1.0.0",
-  "graph_revision": "deterministic-question-focused-v2",
+  "graph_revision": "deterministic-question-focused-v4",
   "name": "Personal Research Specialist — Deterministic Baseline",
   "source_material": "synthetic",
   "description": "Controlled benchmark for evidence extraction, question answerability and citation traceability. It is not a factuality or external-source-quality benchmark.",

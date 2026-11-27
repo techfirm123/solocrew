@@ -13,9 +13,19 @@ from solocrew_runtime.research.graph import (
     _MAX_EVIDENCE_PER_QUESTION,
     _MINIMUM_MATCHED_TERMS,
     _MINIMUM_RELEVANCE_SCORE,
+    GRAPH_REVISION,
     _meaningful_terms,
     _split_sentences,
     execute_research_request,
+)
+from solocrew_runtime.research.intent import (
+    INTENT_REVISION,
+    evaluate_candidate_intent,
+    extract_question_intent,
+)
+from solocrew_runtime.research.normalization import (
+    NORMALIZATION_REVISION,
+    normalization_trace,
 )
 
 EvidenceKey = tuple[str, str]
@@ -87,10 +97,11 @@ def _matching_diagnostics(
     question: str,
     returned_evidence: list[Any],
 ) -> dict[str, Any]:
-    """Explain how question-focused matching evaluates every source sentence."""
+    """Explain how deterministic matching evaluates every source sentence."""
 
     question_terms = _meaningful_terms(question)
     topic_context_terms = _meaningful_terms(request.topic)
+    question_intent = extract_question_intent(question)
 
     candidates: list[dict[str, Any]] = []
     eligible_candidates: list[tuple[float, int, int, int]] = []
@@ -105,7 +116,20 @@ def _matching_diagnostics(
 
             relevance_score = len(matched_terms) / len(question_terms) if question_terms else 0.0
 
-            if not matched_terms:
+            intent_evaluation = evaluate_candidate_intent(
+                question_intent,
+                sentence_terms,
+            )
+
+            # Preserve the established lexical-threshold diagnostic when
+            # a candidate has some question overlap but fewer than two terms.
+            # With no overlap, intent diagnostics provide the more useful
+            # explanation when a recognized intent constraint is violated.
+            if matched_terms and len(matched_terms) < _MINIMUM_MATCHED_TERMS:
+                selection_reason = "BELOW_MINIMUM_MATCHED_TERMS"
+            elif not intent_evaluation.eligible:
+                selection_reason = intent_evaluation.reason
+            elif not matched_terms:
                 selection_reason = "NO_QUESTION_TERM_OVERLAP"
             elif len(matched_terms) < _MINIMUM_MATCHED_TERMS:
                 selection_reason = "BELOW_MINIMUM_MATCHED_TERMS"
@@ -120,8 +144,11 @@ def _matching_diagnostics(
                 "source_title": source.title,
                 "sentence_index": sentence_index,
                 "excerpt": sentence,
+                "normalized_terms": sorted(sentence_terms),
+                "normalization_trace": normalization_trace(sentence),
                 "matched_terms": sorted(matched_terms),
                 "topic_context_terms_matched": sorted(topic_terms_matched),
+                "intent_evaluation": intent_evaluation.to_dict(),
                 "relevance_score": round(relevance_score, 3),
                 "matched_term_count": len(matched_terms),
                 "eligible": selection_reason == "PENDING_RANKING",
@@ -181,8 +208,11 @@ def _matching_diagnostics(
 
     return {
         "question_terms": sorted(question_terms),
+        "question_normalization_trace": normalization_trace(question),
         "topic_context_terms": sorted(topic_context_terms),
         "topic_terms_used_for_scoring": False,
+        "question_intent": question_intent.to_dict(),
+        "intent_revision": INTENT_REVISION,
         "minimum_matched_terms": _MINIMUM_MATCHED_TERMS,
         "minimum_relevance_score": _MINIMUM_RELEVANCE_SCORE,
         "maximum_evidence_per_question": _MAX_EVIDENCE_PER_QUESTION,
@@ -338,16 +368,20 @@ def build_benchmark_diagnostics(
         "diagnostic_schema_version": "1.0.0",
         "benchmark_id": benchmark.benchmark_id,
         "benchmark_version": benchmark.version,
-        "graph_revision": benchmark.graph_revision,
+        "graph_revision": GRAPH_REVISION,
+        "normalization_revision": NORMALIZATION_REVISION,
+        "intent_revision": INTENT_REVISION,
         "case_count": len(case_results),
         "question_count": total_questions,
         "status_consistency_errors": total_status_consistency_errors,
         "selection_consistency_errors": total_selection_consistency_errors,
         "explanation": (
-            "This report explains question-focused deterministic token matching. "
+            "This report explains deterministic question-focused matching. "
             "Topic terms are retained as context but are not evidence of relevance. "
-            "A selected sentence is not proof of factual correctness or semantic support. "
-            "Source quality and external research discovery are outside this diagnostic."
+            "Recognized yes/no outcome questions receive additional subject and "
+            "outcome constraints. A selected sentence is not proof of factual "
+            "correctness or semantic support. Source quality and external research "
+            "discovery are outside this diagnostic."
         ),
         "cases": case_results,
     }

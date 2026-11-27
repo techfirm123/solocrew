@@ -4,7 +4,13 @@
 This directory contains controlled benchmarks for the deterministic Personal
 Research Specialist.
 
-## Benchmark
+There are two benchmark suites:
+
+- `benchmarks/research-v1.json`: controlled regression benchmark.
+- `benchmarks/research-challenge-v1.json`: challenge benchmark designed to
+  expose limitations in deterministic matching.
+
+## 1. Controlled regression benchmark
 
 `benchmarks/research-v1.json` contains synthetic source material covering:
 
@@ -13,46 +19,91 @@ Research Specialist.
 - SSD reliability
 
 The benchmark checks evidence extraction, question answerability and citation
-traceability. It does not establish factual correctness, external-source
-quality, or business usefulness.
+traceability.
 
-## Run the original benchmark
+It is retained as a stable reference dataset. Its graph revision identifies
+the implementation used for the current run.
 
-From `services/specialist-runtime`:
+Run it from `services/specialist-runtime`:
 
 ```bash
 uv run python -m solocrew_runtime.evaluation.run_benchmark
 ```
 
-This produces the aggregate baseline report.
+## 2. Challenge benchmark
 
-## Run the benchmark with diagnostics
+`benchmarks/research-challenge-v1.json` contains five scenarios:
 
-From `services/specialist-runtime`:
+- Paraphrased questions with vocabulary differences.
+- Short questions with misleading keyword overlap.
+- Distractors with strong lexical overlap but insufficient semantic support.
+- Questions requiring multiple evidence sentences.
+- Unsupported questions used as negative controls.
 
-```bash
-uv run python -m solocrew_runtime.evaluation.run_diagnostics
-```
-
-An alternate benchmark file can be supplied:
+Run the challenge benchmark with diagnostics:
 
 ```bash
 uv run python -m solocrew_runtime.evaluation.run_diagnostics \
-  --benchmark evaluation/benchmarks/research-v1.json
+  --benchmark evaluation/benchmarks/research-challenge-v1.json
 ```
 
-The diagnostic runner:
+To save the complete report:
 
-1. Executes the original benchmark and retains its aggregate metrics.
-2. Executes a separate diagnostic pass.
-3. Adds question-level explanations to the JSON report.
+```bash
+uv run python -m solocrew_runtime.evaluation.run_diagnostics \
+  --benchmark evaluation/benchmarks/research-challenge-v1.json \
+  > /tmp/solocrew-research-challenge-v1.json
+```
 
-The latency figures in the baseline section are measured during the original
-benchmark pass. They do not include diagnostic report construction.
+The report contains aggregate benchmark metrics and question-level diagnostics.
 
-## Understanding question diagnostics
+## 3. Current graph and normalization revisions
 
-Each question has three main sections.
+Current graph revision:
+
+`deterministic-question-focused-v3`
+
+Current normalization revision:
+
+`controlled-concept-aliases-v1`
+
+Evidence matching uses terms extracted from the research question.
+
+The research topic remains available as context, but its terms do not contribute
+to the evidence relevance score.
+
+The controlled normalizer applies:
+
+- Existing simple plural normalization.
+- Explicit aliases for selected thermal-condition vocabulary.
+- Explicit aliases for selected causal-relation vocabulary.
+
+The current concept groups are:
+
+| Concept group | Controlled aliases |
+|---|---|
+| `temperature_condition` | hot, hotter, overheat, overheated, overheating, temperature |
+| `causal_relation` | cause, causing, increase, increasing, make, made, raise, raised |
+
+Generic `heat` and `thermal` remain independent terms. They are deliberately
+not collapsed into `temperature_condition`, because doing so can create
+unrelated matches in technical contexts such as thermal paste and heat transfer.
+
+These groups are small, reviewed matching aids. They do not establish
+unrestricted semantic equivalence.
+
+The matching thresholds remain:
+
+- At least two distinct normalized question terms must match.
+- The proportion of normalized question terms matched must be at least 0.30.
+- A maximum of four evidence sentences is returned per question.
+
+Eligible sentences are ranked by relevance score. Ties retain stable source
+and sentence ordering.
+
+## 4. Understanding diagnostics
+
+Each question diagnostic has three principal sections.
 
 ### `answerability`
 
@@ -64,48 +115,68 @@ specialist considered it supported, and the resulting classification:
 - `FALSE_NEGATIVE`
 - `TRUE_NEGATIVE`
 
-A false positive in this section means an unsupported question was treated as
-supported.
-
 ### `evidence`
 
-Shows expected and returned evidence, together with:
+Shows expected and returned evidence:
 
 - `true_positive`: returned evidence that matches the benchmark labels.
 - `false_positive`: returned evidence not included in the benchmark labels.
 - `false_negative`: expected evidence that was not returned.
 
-The comparison uses exact source ID and sentence matching.
+Evidence is compared using exact source ID and sentence matching.
 
 ### `matching`
 
-Explains the deterministic token-overlap matcher:
+Explains the deterministic matcher:
 
-- `query_terms`: normalized terms derived from the research topic and question.
-- `matched_terms`: query terms found in an individual source sentence.
-- `relevance_score`: matched query terms divided by total query terms.
+- `normalization_revision`: controlled vocabulary mapping revision.
+- `question_term_normalization`: original terms and their normalized forms.
+- `topic_term_normalization`: normalized topic terms.
+- `question_terms`: canonical terms used for evidence matching.
+- `topic_context_terms`: terms retained for context.
+- `matched_terms`: normalized question terms found in a source sentence.
+- `normalization_trace`: token-level normalization of each candidate sentence.
+- `relevance_score`: matched question terms divided by total question terms.
+- `minimum_matched_terms`: the minimum number of distinct matching terms.
 - `minimum_relevance_score`: the configured acceptance threshold.
 - `selection_rank`: candidate ranking based on relevance and stable source order.
-- `selection_reason`: why the candidate was selected or not selected.
+- `selection_reason`: why the candidate was selected or rejected.
 
-Possible selection reasons:
+The original source sentence remains unchanged in returned evidence.
 
-- `SELECTED`
-- `NO_TERM_OVERLAP`
-- `BELOW_MINIMUM_RELEVANCE_SCORE`
-- `EXCLUDED_BY_EVIDENCE_LIMIT`
+## 5. Interpreting the challenge benchmark
 
-`selection_consistency_errors` checks whether the diagnostic's reconstructed
-selection matches the evidence actually returned by the graph.
+The challenge benchmark is expected to expose weaknesses in the current matcher.
 
-## Important limitations
+Controlled concept normalization is intended to improve selected vocabulary
+mismatches. It does not solve:
 
-The diagnostic explains the current deterministic matching algorithm. It does
-not determine whether an evidence sentence semantically supports a question.
+- Arbitrary paraphrases.
+- Synonyms that have not been explicitly mapped.
+- Entity and action relationship understanding.
+- Questions where matching words appear in unrelated contexts.
+- Natural-language synthesis across multiple evidence items.
 
-The benchmark labels are manually authored and the source material is
-synthetic. These diagnostics must not be interpreted as a factuality score.
+The multi-sentence scenario tests evidence retrieval, not whether the specialist
+can synthesize the evidence into a complete answer.
 
-Do not change the benchmark labels merely to improve the reported metrics.
-Changes to expected evidence require an explicit review of the benchmark
-source material and annotation.
+Do not modify expected evidence labels merely to improve scores.
+
+If the matcher is changed, review the new outcomes against both benchmark
+suites and preserve historical results.
+
+## 6. Limitations
+
+Both benchmarks use synthetic material.
+
+They do not establish:
+
+- Factual correctness of the authored source material.
+- Authority, freshness or diversity of real external sources.
+- Research discovery recall beyond supplied source material.
+- Semantic equivalence across arbitrary paraphrases.
+- Correct synthesis of multi-source evidence.
+- Quality of natural-language recommendations.
+- Business usefulness of the final research report.
+
+No LLM is used by either benchmark.

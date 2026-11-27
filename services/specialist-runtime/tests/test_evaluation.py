@@ -21,7 +21,7 @@ def test_initial_benchmark_contains_three_cases_and_thirteen_questions() -> None
 
     assert benchmark.benchmark_id == "solocrew-personal-research"
     assert benchmark.version == "1.0.0"
-    assert benchmark.graph_revision == "deterministic-question-focused-v2"
+    assert benchmark.graph_revision == "deterministic-question-focused-v4"
     assert len(benchmark.cases) == 3
 
     question_count = sum(len(case.questions) for case in benchmark.cases)

@@ -54,7 +54,8 @@ _STOP_WORDS = frozenset(
     }
 )
 
-_MINIMUM_RELEVANCE_SCORE = 0.25
+_MINIMUM_RELEVANCE_SCORE = 0.30
+_MINIMUM_MATCHED_TERMS = 2
 _MAX_EVIDENCE_PER_QUESTION = 4
 
 
@@ -113,17 +114,19 @@ def _prepare_research(
 def _collect_evidence(
     state: ResearchGraphState,
 ) -> dict[str, dict[str, list[ResearchEvidence]]]:
-    """Find and rank source sentences using deterministic term matching."""
+    """Find and rank source sentences using question-focused term matching."""
 
     request = state["request"]
     evidence_by_question: dict[str, list[ResearchEvidence]] = {}
 
     for question in request.research_questions:
-        query_terms = _meaningful_terms(f"{request.topic} {question}")
+        # The question defines the evidence requirement.
+        # The broader topic is context, not proof that a sentence answers it.
+        question_terms = _meaningful_terms(question)
 
         ranked_matches: list[tuple[float, int, int, ResearchEvidence]] = []
 
-        if not query_terms:
+        if not question_terms:
             evidence_by_question[question] = []
             continue
 
@@ -132,12 +135,12 @@ def _collect_evidence(
 
             for sentence_index, sentence in enumerate(sentences):
                 sentence_terms = _meaningful_terms(sentence)
-                matched_terms = query_terms.intersection(sentence_terms)
+                matched_terms = question_terms.intersection(sentence_terms)
 
-                if not matched_terms:
+                if len(matched_terms) < _MINIMUM_MATCHED_TERMS:
                     continue
 
-                relevance_score = len(matched_terms) / len(query_terms)
+                relevance_score = len(matched_terms) / len(question_terms)
 
                 if relevance_score < _MINIMUM_RELEVANCE_SCORE:
                     continue

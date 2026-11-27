@@ -2,15 +2,14 @@
 
 Private Python execution runtime for SoloCrew digital specialists.
 
-The first capability is the Personal Research Specialist's deterministic
-research graph.
+The first capability is the Personal Research Specialist.
 
 ## Technology
 
-- Python 3.13
+- Python 3.13 and 3.14
 - uv for Python project and dependency management
 - FastAPI for the internal HTTP boundary
-- Pydantic for typed request and response contracts
+- Pydantic for typed and validated contracts
 - LangGraph for specialist execution graphs
 - Pytest for tests
 - Ruff for linting and formatting
@@ -19,16 +18,16 @@ research graph.
 
 The Java/Spring Boot backend remains authoritative for:
 
-- Owner authentication and authorization
-- Business workspaces and memberships
-- Work assignments and assignment lifecycle
-- Business data and PostgreSQL persistence
-- Audit events
-- Durable workflow orchestration through Temporal
+- Owner authentication and authorization.
+- Business workspaces and memberships.
+- Work assignments and assignment lifecycle.
+- Business data and PostgreSQL persistence.
+- Audit events.
+- Durable assignment workflow orchestration through Temporal.
 
 This Python runtime:
 
-- Executes specialist-specific work.
+- Executes specialist-specific responsibilities.
 - Accepts validated execution requests from trusted backend callers.
 - Returns structured, validated results.
 - Does not connect directly to the SoloCrew PostgreSQL database.
@@ -37,15 +36,13 @@ This Python runtime:
 The runtime is intended to be reachable only through a private network.
 For local development, bind it to `127.0.0.1`.
 
-## Initial research behaviour
+## Personal Research Specialist
 
-The first graph analyses source excerpts supplied in the execution request.
+The current deterministic graph:
 
-It:
-
-1. Receives the research topic and questions.
-2. Analyses the supplied excerpts.
-3. Finds relevant sentences using deterministic term matching.
+1. Receives a research topic and questions.
+2. Analyses supplied source excerpts.
+3. Finds candidate evidence using deterministic term matching.
 4. Associates evidence with each research question.
 5. Reports unsupported questions as evidence gaps.
 6. Returns a structured research brief.
@@ -58,9 +55,16 @@ It does not yet:
 - Generate unsupported answers.
 - Persist assignments or reports.
 
-## Prerequisites
+## Evaluation
 
-Install uv with Homebrew:
+The evaluation framework measures the deterministic graph against
+versioned benchmark datasets.
+
+Initial benchmark:
+
+    evaluation/benchmarks/research-v1.json
+
+Run it from this directory:
 
 ```bash
-brew install uv
+uv run python -m solocrew_runtime.evaluation.run_benchmark

@@ -65,7 +65,7 @@ def test_graph_returns_insufficient_evidence_when_nothing_matches() -> None:
                 "source_id": "source-002",
                 "title": "Battery notes",
                 "source_url": None,
-                "excerpt": ("Battery capacity gradually decreases as lithium-ion cells age."),
+                "excerpt": "Battery capacity gradually decreases as lithium-ion cells age.",
             }
         ],
     )
@@ -75,6 +75,36 @@ def test_graph_returns_insufficient_evidence_when_nothing_matches() -> None:
     assert response.status == "INSUFFICIENT_EVIDENCE"
     assert response.findings[0].status == "NO_SUPPORTING_EVIDENCE"
     assert response.findings[0].evidence == []
+
+
+def test_graph_rejects_topic_overlap_as_the_only_evidence() -> None:
+    request = ResearchExecutionRequest(
+        assignment_id=uuid4(),
+        execution_id=uuid4(),
+        topic="Laptop battery health",
+        research_questions=[
+            "Does replacing RAM improve battery runtime?",
+        ],
+        sources=[
+            {
+                "source_id": "source-003",
+                "title": "Battery storage notes",
+                "source_url": None,
+                "excerpt": (
+                    "A laptop battery should be stored with a partial charge "
+                    "during long periods of inactivity."
+                ),
+            }
+        ],
+    )
+
+    response = execute_research_request(request)
+
+    finding = response.findings[0]
+
+    assert response.status == "INSUFFICIENT_EVIDENCE"
+    assert finding.status == "NO_SUPPORTING_EVIDENCE"
+    assert finding.evidence == []
 
 
 def test_graph_preserves_assignment_and_execution_ids() -> None:

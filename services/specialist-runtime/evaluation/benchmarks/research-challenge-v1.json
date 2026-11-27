@@ -1,0 +1,132 @@
+
+{
+  "benchmark_id": "solocrew-personal-research-challenge",
+  "version": "1.0.0",
+  "graph_revision": "deterministic-question-focused-v2",
+  "name": "Personal Research Specialist — Deterministic Challenge Benchmark",
+  "source_material": "synthetic",
+  "description": "Challenge benchmark for paraphrased questions, short keyword overlap, misleading distractors, multi-sentence evidence and unsupported-question rejection. Designed to expose limitations, not to enforce perfect scores.",
+  "cases": [
+    {
+      "case_id": "paraphrased-thermal-question",
+      "title": "Paraphrased thermal question",
+      "topic": "Laptop thermal management",
+      "sources": [
+        {
+          "source_id": "thermal-load-01",
+          "title": "Processor temperature notes",
+          "source_url": null,
+          "excerpt": "High processor load raises internal operating temperature."
+        }
+      ],
+      "questions": [
+        {
+          "question": "What makes a laptop run hot?",
+          "expected_evidence": [
+            {
+              "source_id": "thermal-load-01",
+              "excerpt": "High processor load raises internal operating temperature."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "short-keyword-overlap",
+      "title": "Short question with misleading keyword overlap",
+      "topic": "Laptop battery optimization",
+      "sources": [
+        {
+          "source_id": "memory-upgrade-01",
+          "title": "Memory upgrade notes",
+          "source_url": null,
+          "excerpt": "Additional RAM can improve application multitasking when several programs are open."
+        }
+      ],
+      "questions": [
+        {
+          "question": "Does RAM improve battery life?",
+          "expected_evidence": []
+        }
+      ]
+    },
+    {
+      "case_id": "high-overlap-distractor",
+      "title": "High keyword overlap with irrelevant evidence",
+      "topic": "CPU replacement and battery life",
+      "sources": [
+        {
+          "source_id": "cpu-repair-01",
+          "title": "CPU replacement notes",
+          "source_url": null,
+          "excerpt": "Replacing a CPU requires checking motherboard socket compatibility."
+        }
+      ],
+      "questions": [
+        {
+          "question": "Does replacing a CPU improve battery life?",
+          "expected_evidence": []
+        }
+      ]
+    },
+    {
+      "case_id": "multi-sentence-battery-evidence",
+      "title": "Question requiring multiple evidence sentences",
+      "topic": "Swollen battery safety",
+      "sources": [
+        {
+          "source_id": "battery-hazard-01",
+          "title": "Battery hazard notes",
+          "source_url": null,
+          "excerpt": "A swollen battery can release flammable gas if punctured."
+        },
+        {
+          "source_id": "battery-handling-01",
+          "title": "Battery handling procedure",
+          "source_url": null,
+          "excerpt": "Safe handling steps require technicians to isolate the swollen battery."
+        }
+      ],
+      "questions": [
+        {
+          "question": "What are the hazards and safe handling steps for a swollen battery?",
+          "expected_evidence": [
+            {
+              "source_id": "battery-hazard-01",
+              "excerpt": "A swollen battery can release flammable gas if punctured."
+            },
+            {
+              "source_id": "battery-handling-01",
+              "excerpt": "Safe handling steps require technicians to isolate the swollen battery."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "unsupported-screen-ssd-question",
+      "title": "Unsupported question control",
+      "topic": "Laptop screen and SSD reliability",
+      "sources": [
+        {
+          "source_id": "ssd-health-02",
+          "title": "SSD health indicators",
+          "source_url": null,
+          "excerpt": "SMART wear indicators can provide an early warning of declining drive health."
+        },
+        {
+          "source_id": "nvme-technology-02",
+          "title": "NVMe technology notes",
+          "source_url": null,
+          "excerpt": "NVMe drives use PCI Express lanes to communicate with the host computer."
+        }
+      ],
+      "questions": [
+        {
+          "question": "Can screen damage affect SSD write endurance?",
+          "expected_evidence": []
+        }
+      ]
+    }
+  ]
+}

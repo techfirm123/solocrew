@@ -4,7 +4,13 @@
 This directory contains controlled benchmarks for the deterministic Personal
 Research Specialist.
 
-## Benchmark
+There are two benchmark suites:
+
+- `benchmarks/research-v1.json`: controlled regression benchmark.
+- `benchmarks/research-challenge-v1.json`: challenge benchmark designed to
+  expose limitations in deterministic matching.
+
+## 1. Controlled regression benchmark
 
 `benchmarks/research-v1.json` contains synthetic source material covering:
 
@@ -13,50 +19,51 @@ Research Specialist.
 - SSD reliability
 
 The benchmark checks evidence extraction, question answerability and citation
-traceability. It does not establish factual correctness, external-source
-quality, or business usefulness.
+traceability.
 
-## Run the original benchmark
+It is intentionally retained as a stable reference for the current
+question-focused deterministic matcher.
 
-From `services/specialist-runtime`:
+Run it from `services/specialist-runtime`:
 
 ```bash
 uv run python -m solocrew_runtime.evaluation.run_benchmark
 ```
 
-This produces the aggregate benchmark report.
+## 2. Challenge benchmark
 
-## Run the benchmark with diagnostics
+`benchmarks/research-challenge-v1.json` contains five additional scenarios:
 
-From `services/specialist-runtime`:
+- Paraphrased questions with vocabulary differences.
+- Short questions with misleading keyword overlap.
+- Distractors with strong lexical overlap but insufficient semantic support.
+- Questions requiring multiple evidence sentences.
+- Unsupported questions used as negative controls.
 
-```bash
-uv run python -m solocrew_runtime.evaluation.run_diagnostics
-```
-
-An alternate benchmark file can be supplied:
+Run the challenge benchmark with diagnostics:
 
 ```bash
 uv run python -m solocrew_runtime.evaluation.run_diagnostics \
-  --benchmark evaluation/benchmarks/research-v1.json
+  --benchmark evaluation/benchmarks/research-challenge-v1.json
 ```
 
-The diagnostic runner:
+To save the complete report:
 
-1. Executes the aggregate benchmark.
-2. Executes a separate diagnostic pass.
-3. Adds question-level explanations to the JSON report.
+```bash
+uv run python -m solocrew_runtime.evaluation.run_diagnostics \
+  --benchmark evaluation/benchmarks/research-challenge-v1.json \
+  > /tmp/solocrew-research-challenge-v1.json
+```
 
-The latency figures in the baseline section are measured during the original
-benchmark pass. They do not include diagnostic report construction.
+The report contains aggregate benchmark metrics and question-level diagnostics.
 
-## Current deterministic matching rules
+## 3. Current deterministic matching rules
 
 The current graph revision is:
 
 `deterministic-question-focused-v2`
 
-Evidence matching uses the terms extracted from the research question.
+Evidence matching uses terms extracted from the research question.
 
 The research topic remains available as context, but its terms do not contribute
 to the evidence relevance score.
@@ -70,12 +77,12 @@ Eligible sentences are ranked by relevance score. Ties retain stable source
 and sentence ordering. A maximum of four evidence sentences is returned per
 question.
 
-These are initial deterministic heuristics. They must be evaluated against a
-broader benchmark before being treated as general-purpose relevance rules.
+These are initial deterministic heuristics, not general-purpose semantic
+relevance rules.
 
-## Understanding question diagnostics
+## 4. Understanding diagnostics
 
-Each question has three main sections.
+Each question diagnostic has three principal sections.
 
 ### `answerability`
 
@@ -87,51 +94,58 @@ specialist considered it supported, and the resulting classification:
 - `FALSE_NEGATIVE`
 - `TRUE_NEGATIVE`
 
-A false positive means an unsupported question was treated as supported.
-
 ### `evidence`
 
-Shows expected and returned evidence, together with:
+Shows expected and returned evidence:
 
 - `true_positive`: returned evidence that matches the benchmark labels.
 - `false_positive`: returned evidence not included in the benchmark labels.
 - `false_negative`: expected evidence that was not returned.
 
-The comparison uses exact source ID and sentence matching.
+Evidence is compared using exact source ID and sentence matching.
 
 ### `matching`
 
 Explains the deterministic matcher:
 
 - `question_terms`: normalized terms used for evidence matching.
-- `topic_context_terms`: terms retained for context, not evidence scoring.
-- `matched_terms`: question terms found in an individual source sentence.
+- `topic_context_terms`: terms retained for context.
+- `matched_terms`: question terms found in a source sentence.
 - `relevance_score`: matched question terms divided by total question terms.
 - `minimum_matched_terms`: the minimum number of distinct matching terms.
 - `minimum_relevance_score`: the configured acceptance threshold.
 - `selection_rank`: candidate ranking based on relevance and stable source order.
 - `selection_reason`: why the candidate was selected or rejected.
 
-Possible selection reasons:
+## 5. Interpreting the challenge benchmark
 
-- `SELECTED`
-- `NO_QUESTION_TERM_OVERLAP`
-- `BELOW_MINIMUM_MATCHED_TERMS`
-- `BELOW_MINIMUM_RELEVANCE_SCORE`
-- `EXCLUDED_BY_EVIDENCE_LIMIT`
+The challenge benchmark is expected to expose weaknesses in the current matcher.
 
-`selection_consistency_errors` checks whether the diagnostic's reconstructed
-selection matches the evidence actually returned by the graph.
+A false negative on a paraphrased question can indicate vocabulary mismatch.
+A false positive on a short question can indicate that a small number of
+overlapping terms are insufficient to establish semantic support.
 
-## Benchmark interpretation
+The multi-sentence scenario tests whether the graph can retrieve multiple
+relevant evidence sentences. It does not establish that the specialist can
+synthesize those sentences into a complete answer.
 
-The current benchmark contains only three synthetic scenarios and thirteen
-questions. A perfect score on it does not establish general research quality.
+Do not modify the expected evidence labels merely to improve scores.
 
-The benchmark must be expanded with varied question formulations, ambiguous
-questions, short questions, distractor evidence and additional unsupported
-questions.
+If the matcher is changed, preserve the challenge benchmark as a historical
+comparison and review any new expected outcomes explicitly.
 
-Do not change expected evidence labels merely to improve reported metrics.
-Changes to expected evidence require an explicit review of the source material
-and annotations.
+## 6. Limitations
+
+Both benchmarks use synthetic material.
+
+They do not establish:
+
+- Factual correctness of the authored source material.
+- Authority, freshness or diversity of real external sources.
+- Research discovery recall beyond supplied source material.
+- Semantic equivalence across arbitrary paraphrases.
+- Correct synthesis of multi-source evidence.
+- Quality of natural-language recommendations.
+- Business usefulness of the final research report.
+
+No LLM is used by either benchmark.

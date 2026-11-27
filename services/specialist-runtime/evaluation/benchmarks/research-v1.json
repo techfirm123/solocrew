@@ -1,0 +1,176 @@
+
+{
+  "benchmark_id": "solocrew-personal-research",
+  "version": "1.0.0",
+  "graph_revision": "deterministic-question-focused-v2",
+  "name": "Personal Research Specialist — Deterministic Baseline",
+  "source_material": "synthetic",
+  "description": "Controlled benchmark for evidence extraction, question answerability and citation traceability. It is not a factuality or external-source-quality benchmark.",
+  "cases": [
+    {
+      "case_id": "laptop-battery-health",
+      "title": "Laptop battery health",
+      "topic": "Laptop battery health",
+      "sources": [
+        {
+          "source_id": "battery-guide-01",
+          "title": "Battery maintenance notes",
+          "source_url": null,
+          "excerpt": "Lithium-ion battery capacity gradually decreases as the cells age. High operating temperatures accelerate chemical degradation inside lithium-ion cells. A swollen battery should be removed from service and handled using approved safety procedures. A laptop battery should be stored with a partial charge during long periods of inactivity."
+        },
+        {
+          "source_id": "charger-guide-01",
+          "title": "Charging cable inspection notes",
+          "source_url": null,
+          "excerpt": "A damaged charging cable can cause intermittent charging and localized heat near a connector."
+        }
+      ],
+      "questions": [
+        {
+          "question": "How does battery age affect maximum capacity?",
+          "expected_evidence": [
+            {
+              "source_id": "battery-guide-01",
+              "excerpt": "Lithium-ion battery capacity gradually decreases as the cells age."
+            }
+          ]
+        },
+        {
+          "question": "Which operating conditions accelerate battery degradation?",
+          "expected_evidence": [
+            {
+              "source_id": "battery-guide-01",
+              "excerpt": "High operating temperatures accelerate chemical degradation inside lithium-ion cells."
+            }
+          ]
+        },
+        {
+          "question": "What should be done when a battery becomes swollen?",
+          "expected_evidence": [
+            {
+              "source_id": "battery-guide-01",
+              "excerpt": "A swollen battery should be removed from service and handled using approved safety procedures."
+            }
+          ]
+        },
+        {
+          "question": "Does replacing RAM improve battery runtime?",
+          "expected_evidence": []
+        },
+        {
+          "question": "Can a damaged charging cable cause connector heat?",
+          "expected_evidence": [
+            {
+              "source_id": "charger-guide-01",
+              "excerpt": "A damaged charging cable can cause intermittent charging and localized heat near a connector."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "laptop-overheating",
+      "title": "Laptop overheating",
+      "topic": "Laptop overheating",
+      "sources": [
+        {
+          "source_id": "cooling-guide-01",
+          "title": "Laptop cooling notes",
+          "source_url": null,
+          "excerpt": "Blocked air vents restrict airflow and can cause a laptop to overheat. Dried thermal paste can reduce heat transfer from the processor to the heat sink. Heavy processor workloads increase power consumption and heat generation."
+        },
+        {
+          "source_id": "storage-guide-01",
+          "title": "Storage technology notes",
+          "source_url": null,
+          "excerpt": "An SSD stores data in flash memory cells and has no moving mechanical parts."
+        }
+      ],
+      "questions": [
+        {
+          "question": "How do blocked vents affect laptop airflow?",
+          "expected_evidence": [
+            {
+              "source_id": "cooling-guide-01",
+              "excerpt": "Blocked air vents restrict airflow and can cause a laptop to overheat."
+            }
+          ]
+        },
+        {
+          "question": "How can dried thermal paste affect processor cooling?",
+          "expected_evidence": [
+            {
+              "source_id": "cooling-guide-01",
+              "excerpt": "Dried thermal paste can reduce heat transfer from the processor to the heat sink."
+            }
+          ]
+        },
+        {
+          "question": "What effect can heavy processor workloads have on heat generation?",
+          "expected_evidence": [
+            {
+              "source_id": "cooling-guide-01",
+              "excerpt": "Heavy processor workloads increase power consumption and heat generation."
+            }
+          ]
+        },
+        {
+          "question": "Does extra RAM repair a damaged laptop display?",
+          "expected_evidence": []
+        }
+      ]
+    },
+    {
+      "case_id": "ssd-reliability",
+      "title": "SSD reliability",
+      "topic": "SSD reliability",
+      "sources": [
+        {
+          "source_id": "ssd-health-guide-01",
+          "title": "SSD reliability notes",
+          "source_url": null,
+          "excerpt": "An SSD with worn flash cells may enter read-only mode to protect existing data. Keeping backups on a separate device reduces the impact of drive failure. SMART wear indicators can provide an early warning of declining drive health."
+        },
+        {
+          "source_id": "nvme-guide-01",
+          "title": "NVMe technology notes",
+          "source_url": null,
+          "excerpt": "NVMe drives use PCI Express lanes to communicate with the host computer."
+        }
+      ],
+      "questions": [
+        {
+          "question": "What happens when SSD flash cells become worn?",
+          "expected_evidence": [
+            {
+              "source_id": "ssd-health-guide-01",
+              "excerpt": "An SSD with worn flash cells may enter read-only mode to protect existing data."
+            }
+          ]
+        },
+        {
+          "question": "How can backups protect important data before drive failure?",
+          "expected_evidence": [
+            {
+              "source_id": "ssd-health-guide-01",
+              "excerpt": "Keeping backups on a separate device reduces the impact of drive failure."
+            }
+          ]
+        },
+        {
+          "question": "Can SMART wear indicators signal declining drive health?",
+          "expected_evidence": [
+            {
+              "source_id": "ssd-health-guide-01",
+              "excerpt": "SMART wear indicators can provide an early warning of declining drive health."
+            }
+          ]
+        },
+        {
+          "question": "Does a faster processor increase SSD storage capacity?",
+          "expected_evidence": []
+        }
+      ]
+    }
+  ]
+}
